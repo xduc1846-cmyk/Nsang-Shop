@@ -171,10 +171,11 @@ function renderUser(anim){
  const u=AuthService.user();if(!anim)shown=u?u.balance:0;
  $('#ub').innerHTML=(u?`<button data-act="topup" title="Số dư ví">💰 <span id="bal" class="mono">${vnd(shown)}</span></button>`:'')
   +'<button class="p" data-act="topup">Nạp tiền QR</button>'
+  +(isAdmin()?'<button data-act="tab" data-t="admin">🛡️ Admin</button>':'')
   +`<button data-act="theme" aria-label="Đổi giao diện">${DB.theme==='dark'?'☀️':'🌙'}</button>`
   +(u?`<button data-act="profile" class="row" style="gap:8px"><span class="av">${ini(u.name)}</span><span style="text-align:left;line-height:1.2"><b style="font-size:13px">${esc(u.name)}</b><br><small class="mono mu">${u.code}</small></span></button>`:'<button data-act="login">🔐 Đăng nhập Google</button>');
  if(u&&anim)countUp(u.balance)}
-const renderTabs=()=>{$('#tabs').innerHTML=[['shop','🛍️ Kho File'],['owned','📥 File Đã Mua'],['hist','🧾 Lịch Sử Giao Dịch'],['admin','⚙️ Quản Trị']].map(([k,t])=>`<button class="${k===tab?'on':''}" data-act="tab" data-t="${k}">${t}</button>`).join('')};
+const renderTabs=()=>{if(tab==='admin'&&!isAdmin())tab='shop';$('#tabs').innerHTML=[['shop','🛍️ Kho File'],['owned','📥 File Đã Mua'],['hist','🧾 Lịch Sử Giao Dịch'],...(isAdmin()?[['admin','⚙️ Quản Trị · Nạp tiền']]:[])].map(([k,t])=>`<button class="${k===tab?'on':''}" data-act="tab" data-t="${k}">${t}</button>`).join('')};
 const renderStats=()=>{$('#st').innerHTML=`<div><b class="mono">${DB.files.length}</b><small>file sẵn sàng</small></div><div><b>🔐 Google</b><small>đăng nhập an toàn</small></div><div><b>🔒 Bảo mật</b><small>link chỉ mở khi đã mua</small></div>`};
 const renderMain=()=>{$('#main').innerHTML=({shop:vShop,owned:vOwned,hist:vHist,admin:vAdmin})[tab]()};
 const renderAll=()=>{renderUser(false);renderTabs();renderMain();renderStats()};
@@ -294,10 +295,12 @@ document.addEventListener('click',e=>{
   getDocs(query(collection(fs,'users'),where('code','==',code))).then(r=>{
    if(r.empty)throw {message:'Không tìm thấy tài khoản mã '+code};
    if(r.size>1)throw {message:'Mã '+code+' bị trùng nhiều tài khoản — không cộng, hãy kiểm tra thủ công'};
-   const ud=r.docs[0],at=Date.now(),b=writeBatch(fs),bal=ud.data().balance||0;
-   b.update(ud.ref,{balance:increment(amt)});
-   b.set(doc(ud.ref,'tx','GD'+at.toString(36).toUpperCase()),{type:'nap',amt,note:'Admin nạp · '+code,at,after:bal+amt});
-   return b.commit().then(()=>{toast('Đã cộng '+vnd(amt)+' cho '+(ud.data().name||code),'ok');$('#mcode').value='';$('#mamt').value=''})
+   const ud=r.docs[0];
+   pend=()=>{const at=Date.now(),b=writeBatch(fs),bal=ud.data().balance||0;
+    b.update(ud.ref,{balance:increment(amt)});
+    b.set(doc(ud.ref,'tx','GD'+at.toString(36).toUpperCase()),{type:'nap',amt,note:'Admin nạp · '+code,at,after:bal+amt});
+    b.commit().then(()=>{toast('Đã cộng '+vnd(amt)+' cho '+(ud.data().name||code),'ok');const c=$('#mcode'),m=$('#mamt');if(c)c.value='';if(m)m.value=''}).catch(er=>toast('Lỗi cộng tiền: '+(er.code||er.message),'er'))};
+   openModal(`<h3>Xác nhận cộng tiền</h3><div style="margin:12px 0"><div class="kv"><span class="mu">Khách</span><b>${esc(ud.data().name)}</b></div><div class="kv"><span class="mu">Email</span><span>${esc(ud.data().email)}</span></div><div class="kv"><span class="mu">Mã nạp</span><b class="mono">${esc(code)}</b></div><div class="kv"><span class="mu">Số tiền cộng</span><b class="mono" style="color:var(--ok)">+${vnd(amt)}</b></div></div><div class="row"><button class="p" data-act="yes">✅ Cộng tiền</button><button data-act="close">Hủy</button></div>`)
   }).catch(er=>toast(er.message||('Lỗi: '+er.code),'er'))}break;
  case'buy':buy(d.id);break;
  case'buyok':{
