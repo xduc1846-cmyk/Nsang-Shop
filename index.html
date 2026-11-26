@@ -76,7 +76,7 @@ footer{border-top:1px solid var(--bd);margin-top:50px;padding:24px 0;color:var(-
 <nav class="tabs" id="tabs"></nav>
 <div id="warn"></div><div id="main"></div>
 </main>
-<footer><div class="w">© 2026 NsangNo1File.vn · Cam kết giao link tải tức thì sau khi thanh toán<br>Nạp tiền: quét QR riêng của tài khoản, chuyển đúng nội dung <b class="mono">NAP &lt;mã tài khoản&gt;</b> — ví được cộng sau khi admin xác nhận đã nhận tiền.</div></footer>
+<footer><div class="w">© 2026 NsangNo1File.vn · Cam kết giao link tải tức thì sau khi thanh toán<br>Nạp tiền: quét QR riêng của tài khoản, chuyển đúng nội dung <b class="mono">NAP &lt;mã tài khoản&gt;</b> — ví được cộng tự động sau khi nhận tiền.</div></footer>
 <div id="ov"></div><div id="ts"></div>
 <script type="module">
 /* ====== BƯỚC 1: DÁN CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY ====== */
@@ -137,7 +137,7 @@ if(FBOK)onAuthStateChanged(auth,async fu=>{
   const ref=doc(fs,'users',fu.uid),email=(fu.email||'').toLowerCase();
   if(!(await getDoc(ref)).exists())await setDoc(ref,{name:(fu.displayName||email.split('@')[0]).slice(0,40),email,code:'NS'+fu.uid.slice(0,6).toUpperCase(),balance:0,at:Date.now()});
   DB.me={uid:fu.uid,name:fu.displayName||email,email,code:'',balance:0,owned:[],tx:[],admin:ADMIN_EMAILS.includes(email)&&fu.emailVerified};
-  unsubs.push(onSnapshot(ref,s=>{if(DB.me&&s.exists()){Object.assign(DB.me,s.data());refresh()}}));
+  let firstSnap=true;unsubs.push(onSnapshot(ref,s=>{if(DB.me&&s.exists()){const old=DB.me.balance||0,nb=s.data().balance||0;Object.assign(DB.me,s.data());if(!firstSnap&&nb>old){toast('✅ Đã nạp +'+vnd(nb-old)+' vào ví','ok');if(topup)closeModal()}firstSnap=false;refresh()}}));
   unsubs.push(onSnapshot(collection(ref,'owned'),s=>{
    DB.me.owned=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.at-a.at);
    s.docs.forEach(d=>{if(!(d.id in DB.links)){DB.links[d.id]='';getDoc(doc(fs,'secrets',d.id)).then(x=>{DB.links[d.id]=x.data()?.link||'';refresh()}).catch(()=>{})}});refresh()}));
@@ -228,13 +228,13 @@ function vTopup(){
 <input id="amt" type="number" min="${MIN}" max="${MAX}" step="1000" placeholder="Hoặc nhập số tiền khác (VNĐ)" value="${topup.amt}" style="width:100%">
 <div style="margin:14px 0;text-align:center"><div id="qr" style="display:inline-block;background:#fff;padding:10px;border-radius:12px"></div><p id="qmsg" class="mu" style="font-size:13px;margin-top:6px"></p></div>
 <div id="info" class="li" style="display:block"></div>
-<hr><p class="mu" style="font-size:13px;margin-bottom:8px">Chuyển khoản xong, bấm nút dưới để báo admin. Ví được cộng ngay khi admin xác nhận đã nhận tiền.</p><button id="hook" class="p" data-act="hook" style="width:100%">✅ Tôi đã chuyển khoản</button>
+<hr><p class="mu" style="font-size:13px;margin-bottom:8px">⚡ Chuyển khoản xong, ví sẽ <b>tự động được cộng</b> sau vài giây — không cần bấm gì thêm. Nhớ nhập đúng nội dung chuyển khoản.</p>
 <button data-act="close" style="width:100%;margin-top:12px">Đóng</button>`}
 
 function drawQR(){
  if(!topup||!$('#qr'))return;
  const u=AuthService.user(),a=topup.amt,ok=Number.isInteger(a)&&a>=MIN&&a<=MAX,memo='NAP '+u.code,box=$('#qr'),hasLib=typeof QRCode!=='undefined';
- box.innerHTML='';box.style.display=ok&&hasLib?'inline-block':'none';$('#hook').disabled=!ok;
+ box.innerHTML='';box.style.display=ok&&hasLib?'inline-block':'none';
  let m=ok?'Quét bằng app ngân hàng bất kỳ (VietQR) — số tiền và nội dung đã điền sẵn':`Nhập số tiền từ ${vnd(MIN)} đến ${vnd(MAX)}`;
  if(ok){if(hasLib)new QRCode(box,{text:vietqr(a,memo),width:200,height:200,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});else m='Không tải được thư viện QR (cần mạng lần đầu). Hãy chuyển khoản thủ công theo thông tin bên dưới.'}
  $('#qmsg').textContent=m;
@@ -282,8 +282,6 @@ document.addEventListener('click',e=>{
  case'topup':openTopup();break;
  case'amt':if(topup){topup.amt=+d.a;$('#amt').value=d.a;drawQR()}break;
  case'cp':copy(d.v);break;
- case'hook':{if(!topup||!u)break;const amt=topup.amt;
-  addDoc(collection(fs,'topups'),{uid:u.uid,code:u.code,name:u.name,amount:amt,status:'pending',at:Date.now()}).then(()=>{closeModal();toast('Đã gửi yêu cầu nạp '+vnd(amt)+' — chờ admin duyệt','ok')}).catch(er=>toast('Lỗi gửi yêu cầu: '+er.code,'er'))}break;
  case'bulk':{if(!isAdmin())break;const raw=($('#bulk')?.value||'').trim();if(!raw)return toast('Hãy dán dữ liệu trước','er');
   const items=raw.split(/\n-{3,}\s*(?:\n|$)/).map(b=>b.split('\n').map(x=>x.trim()).filter(Boolean)).filter(l=>l.length>1).map(l=>{const [c,n,p]=l[0].split('|').map(x=>x.trim()),cat=/android/i.test(c)?'File Android':'File iOS';return{name:n,price:Number(p),cat,link:l.slice(1).join('\n'),meta:'Link MediaFire',desc:'Gói Aimlock cho '+(cat==='File iOS'?'iOS':'Android')+'. Link tải hiện ngay sau khi mua.',icon:ICONS[cat]}});
   if(!items.length||items.some(i=>!i.name||!(i.price>=1000)))return toast('Sai định dạng: mỗi mục cần dòng "iOS | Tên | Giá"','er');
