@@ -56,6 +56,18 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .t{background:var(--cd);border:1px solid var(--bd);border-left:4px solid #6366F1;border-radius:10px;padding:10px 14px;box-shadow:0 10px 30px rgba(0,0,0,.35);animation:in .25s}
 .t[data-k=ok]{border-left-color:var(--ok)}.t[data-k=wa]{border-left-color:var(--wa)}.t[data-k=er]{border-left-color:var(--er)}
 @keyframes in{from{opacity:0;transform:translateY(8px)}}
+#cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;margin:6px 0 18px}
+.cc{display:flex;gap:14px;align-items:center;text-align:left;padding:16px;border-radius:16px}
+.cc.on{border-color:#6366F1;box-shadow:0 0 0 3px rgba(99,102,241,.2)}
+.cc .ic{width:56px;height:56px;font-size:30px}.cc small{color:var(--mu);font-weight:500}
+#sp{margin-top:34px}.sp a,.sp div.r{display:flex;justify-content:space-between;gap:8px;padding:12px 14px;margin-top:8px;border-radius:12px;background:rgba(99,102,241,.1);color:var(--tx);text-decoration:none;font-weight:600}
+.fab{position:fixed;right:14px;z-index:30;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.35);border:0;cursor:pointer;font-size:18px}
+#zl{bottom:150px;background:#0068FF}#up{bottom:90px;background:#111827}
+#nav{position:fixed;left:0;right:0;bottom:0;z-index:25;display:none;background:var(--gl);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--bd);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+#nav button{flex:1;border:0;background:none;border-radius:8px;font-size:11px;padding:6px 2px;color:var(--tx);display:flex;flex-direction:column;gap:2px;align-items:center}
+#nav button span{font-size:20px;line-height:1}
+@media(max-width:720px){#nav{display:flex}body{padding-bottom:78px}#zl{bottom:150px}#up{bottom:90px}footer{margin-bottom:10px}}
+@media(min-width:721px){#zl{bottom:80px}#up{bottom:20px}}
 footer{border-top:1px solid var(--bd);margin-top:50px;padding:24px 0;color:var(--mu);font-size:13px;text-align:center}
 </style>
 </head>
@@ -73,10 +85,14 @@ footer{border-top:1px solid var(--bd);margin-top:50px;padding:24px 0;color:var(-
 <button class="p" data-act="goshop">Khám phá kho file →</button>
 <div class="st" id="st"></div>
 </section>
+<div id="cats"></div>
 <nav class="tabs" id="tabs"></nav>
 <div id="warn"></div><div id="main"></div>
 </main>
-<footer><div class="w">© 2026 NsangNo1File.vn · Cam kết giao link tải tức thì sau khi thanh toán<br>Nạp tiền: quét QR riêng của tài khoản, chuyển đúng nội dung <b class="mono">NAP &lt;mã tài khoản&gt;</b> — ví được cộng tự động sau khi nhận tiền.</div></footer>
+<section id="sp" class="w"><div class="li sp" style="display:block"><h3>🎧 Hỗ trợ trực tuyến</h3><p class="mu" style="font-size:13px;margin-top:6px">Gặp khó khăn khi cài đặt hoặc thanh toán? Nhắn Zalo để được hỗ trợ.</p><a href="https://zalo.me/0867881460" target="_blank" rel="noopener noreferrer"><span>💬 Zalo CSKH</span><span style="color:#6366F1">Kết nối →</span></a><div class="r"><span>📞 Hotline</span><span class="mono">0867881460</span></div></div></section>
+<footer><div class="w">© 2026 NsangNo1File.vn · Cam kết giao link tải tức thì sau khi thanh toán · Hotline/Zalo <b class="mono">0867881460</b><br>Nạp tiền: quét QR riêng của tài khoản, chuyển đúng nội dung <b class="mono">NAP &lt;mã tài khoản&gt;</b> — ví được cộng tự động sau khi nhận tiền.</div></footer>
+<a id="zl" class="fab" href="https://zalo.me/0867881460" target="_blank" rel="noopener noreferrer" aria-label="Zalo hỗ trợ">Zalo</a><button id="up" class="fab" data-act="top" aria-label="Lên đầu trang">↑</button>
+<nav id="nav"><button data-act="home"><span>🏠</span>Trang chủ</button><button data-act="goshop"><span>🛍️</span>Sản phẩm</button><button data-act="topup"><span>💰</span>Nạp tiền</button><button data-act="tab" data-t="owned"><span>🧾</span>Đơn hàng</button><button data-act="me"><span>👤</span>Tôi</button></nav>
 <div id="ov"></div><div id="ts"></div>
 <script type="module">
 /* ====== BƯỚC 1: DÁN CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY ====== */
@@ -176,12 +192,13 @@ function renderUser(anim){
   +(u?`<button data-act="profile" class="row" style="gap:8px"><span class="av">${ini(u.name)}</span><span style="text-align:left;line-height:1.2"><b style="font-size:13px">${esc(u.name)}</b><br><small class="mono mu">${u.code}</small></span></button>`:'<button data-act="login">🔐 Đăng nhập Google</button>');
  if(u&&anim)countUp(u.balance)}
 const renderTabs=()=>{if(tab==='admin'&&!isAdmin())tab='shop';$('#tabs').innerHTML=[['shop','🛍️ Kho File'],['owned','📥 File Đã Mua'],['hist','🧾 Lịch Sử Giao Dịch'],...(isAdmin()?[['admin','⚙️ Quản Trị · Nạp tiền']]:[])].map(([k,t])=>`<button class="${k===tab?'on':''}" data-act="tab" data-t="${k}">${t}</button>`).join('')};
-const renderStats=()=>{$('#st').innerHTML=`<div><b class="mono">${DB.files.length}</b><small>file sẵn sàng</small></div><div><b>🔐 Google</b><small>đăng nhập an toàn</small></div><div><b>🔒 Bảo mật</b><small>link chỉ mở khi đã mua</small></div>`};
+const renderCats=()=>{$('#cats').innerHTML=CATS.map(c=>{const n=DB.files.filter(f=>f.cat===c).length;return `<button class="card cc ${cat===c?'on':''}" data-act="cat" data-c="${c}"><span class="ic">${ICONS[c]}</span><span><b style="font-size:17px">${c}</b><br><small>${n} gói · bấm để xem bảng giá</small></span></button>`}).join('')};
+const renderStats=()=>{renderCats();$('#st').innerHTML=`<div><b class="mono">${DB.files.length}</b><small>file sẵn sàng</small></div><div><b>🔐 Google</b><small>đăng nhập an toàn</small></div><div><b>🔒 Bảo mật</b><small>link chỉ mở khi đã mua</small></div>`};
 const renderMain=()=>{$('#main').innerHTML=({shop:vShop,owned:vOwned,hist:vHist,admin:vAdmin})[tab]()};
 const renderAll=()=>{renderUser(false);renderTabs();renderMain();renderStats()};
 
 function vShop(){
- const k=q.trim().toLowerCase(),L=DB.files.filter(f=>(!cat||f.cat===cat)&&(!k||(f.name+' '+f.desc+' '+f.cat).toLowerCase().includes(k))),u=AuthService.user();
+ const k=q.trim().toLowerCase(),L=DB.files.filter(f=>(!cat||f.cat===cat)&&(!k||(f.name+' '+f.desc+' '+f.cat).toLowerCase().includes(k))).sort((a,b)=>a.cat===b.cat?a.price-b.price:CATS.indexOf(a.cat)-CATS.indexOf(b.cat)),u=AuthService.user();
  if(!L.length)return `<div class="li" style="display:block;text-align:center">😶 Không tìm thấy file phù hợp${k?` cho “${esc(q.trim())}”`:''}.<br><br><button data-act="reset">Xóa bộ lọc</button></div>`;
  return '<div class="grid">'+L.map(f=>{
   const own=u&&u.owned.some(o=>o.id===f.id);
@@ -318,13 +335,17 @@ document.addEventListener('click',e=>{
   pend=()=>{FileService.remove(f.id);if(editId===f.id)editId=null;renderMain();renderStats();toast('Đã xóa file','ok')};
   openModal(`<h3>Xóa file?</h3><p class="mu" style="margin:8px 0 14px">“${esc(f.name)}” sẽ bị gỡ khỏi kho. Người đã mua vẫn giữ quyền tải.</p><div class="row"><button class="dg" data-act="yes">Xóa</button><button data-act="close">Hủy</button></div>`)}break;
  case'yes':{const fn=pend;closeModal();if(fn)fn()}break;
+ case'cat':cat=cat===d.c?'':d.c;$('#cat').value=cat;tab='shop';renderTabs();renderMain();renderCats();$('#tabs').scrollIntoView({behavior:'smooth'});break;
+ case'top':window.scrollTo({top:0,behavior:'smooth'});break;
+ case'home':tab='shop';cat='';$('#cat').value='';renderTabs();renderMain();renderCats();window.scrollTo({top:0,behavior:'smooth'});break;
+ case'me':u?document.querySelector('[data-act=profile]')?.click():openModal(vLogin());break;
  case'close':closeModal();break;
  }});
 document.addEventListener('input',e=>{
  const t=e.target;
  if(t.id==='q'){q=t.value;if(tab!=='shop'){tab='shop';renderTabs()}renderMain()}
  else if(t.id==='amt'&&topup){const n=Number(t.value);topup.amt=t.value!==''&&Number.isFinite(n)?Math.round(n):0;drawQR()}});
-document.addEventListener('change',e=>{if(e.target.id==='cat'){cat=e.target.value;if(tab!=='shop'){tab='shop';renderTabs()}renderMain()}});
+document.addEventListener('change',e=>{if(e.target.id==='cat'){cat=e.target.value;if(tab!=='shop'){tab='shop';renderTabs()}renderMain();renderCats()}});
 document.addEventListener('submit',e=>{
  e.preventDefault();const f=e.target,fd=new FormData(f);
  if(f.id==='lf')doLogin(fd.get('name'),fd.get('email'));
