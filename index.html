@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NsangNo1File.vn — Kho file số, tài liệu, source code</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--bg:#09090B;--cd:#111114;--bd:rgba(255,255,255,.08);--tx:#FAFAFA;--mu:#A1A1AA;--ok:#10B981;--wa:#F59E0B;--er:#EF4444;--gl:rgba(9,9,11,.72);--g:linear-gradient(135deg,#6366F1,#06B6D4)}
+[data-theme=light]{--bg:#F6F6F8;--cd:#FFFFFF;--bd:rgba(0,0,0,.1);--tx:#18181B;--mu:#5F5F68;--gl:rgba(246,246,248,.78)}
+*{box-sizing:border-box;margin:0}
+body{font:15px/1.55 'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg) radial-gradient(700px 320px at 50% -60px,rgba(99,102,241,.2),transparent) no-repeat;color:var(--tx);min-height:100vh;overflow-x:hidden;transition:background-color .3s,color .3s}
+.w{max-width:1200px;margin:auto;padding:0 16px}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.mu{color:var(--mu)}
+h3{font-size:18px;letter-spacing:-.01em}
+hr{border:0;border-top:1px solid var(--bd);margin:14px 0}
+header{position:sticky;top:0;z-index:20;background:var(--gl);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--bd)}
+.hd{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 16px}
+.logo{font-weight:800;font-size:18px;letter-spacing:-.02em}
+.logo b,.hero h1 span{background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent}
+.search{flex:1 1 220px;min-width:0}.search input{width:100%}
+#ub,.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,select,textarea{font:inherit;color:var(--tx);background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:9px 12px;outline:0;max-width:100%}
+input:focus,select:focus,textarea:focus{border-color:#6366F1;box-shadow:0 0 0 3px rgba(99,102,241,.2)}
+button,.bt{font:inherit;font-weight:600;color:var(--tx);cursor:pointer;border:1px solid var(--bd);background:var(--cd);border-radius:10px;padding:9px 14px;transition:.15s;text-decoration:none;display:inline-block;text-align:center}
+button:hover,.bt:hover{border-color:rgba(99,102,241,.6)}
+button:active,.bt:active{transform:scale(.98)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.p{background:var(--g)!important;border:0!important;color:#fff!important}
+.dg{color:var(--er)}.sm{padding:6px 10px;font-size:13px}
+.hero{padding:46px 0 22px;text-align:center}
+.hero h1{font-size:clamp(28px,5vw,48px);line-height:1.12;letter-spacing:-.03em;font-weight:800}
+.hero p{color:var(--mu);max-width:620px;margin:14px auto 20px}
+.st{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+.st div{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:10px 18px}
+.st b{display:block;font-size:19px}.st small{color:var(--mu)}
+.tabs{display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--bd);margin:10px 0 20px}
+.tabs button{border:0;background:none;border-radius:0;color:var(--mu);border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button.on{color:var(--tx);border-bottom-color:#6366F1}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(min(100%,255px),1fr))}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;transition:transform .2s,border-color .2s,box-shadow .2s}
+.card:hover{transform:translateY(-4px);border-color:rgba(99,102,241,.55);box-shadow:0 14px 40px -14px rgba(99,102,241,.4)}
+.ic{font-size:28px;width:50px;height:50px;display:grid;place-items:center;border-radius:14px;background:rgba(99,102,241,.12)}
+.bd{font-size:12px;color:var(--mu);border:1px solid var(--bd);border-radius:99px;padding:2px 10px;white-space:nowrap}
+.bd.ok{color:var(--ok);border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.1)}
+.price{font-weight:700;font-size:18px}
+.li{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.kv{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;padding:6px 0;border-bottom:1px dashed var(--bd)}.kv:last-child{border:0}
+.av{width:32px;height:32px;border-radius:50%;background:var(--g);display:grid;place-items:center;font-weight:700;color:#fff;font-size:14px;flex:none}
+#ov{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;place-items:center;padding:12px;overflow:auto}
+#ov.on{display:grid}
+.mb{background:var(--cd);border:1px solid var(--bd);border-radius:18px;padding:22px;width:min(100%,470px);max-height:92vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+#ts{position:fixed;right:14px;bottom:14px;z-index:60;display:grid;gap:8px;max-width:calc(100% - 28px)}
+.t{background:var(--cd);border:1px solid var(--bd);border-left:4px solid #6366F1;border-radius:10px;padding:10px 14px;box-shadow:0 10px 30px rgba(0,0,0,.35);animation:in .25s}
+.t[data-k=ok]{border-left-color:var(--ok)}.t[data-k=wa]{border-left-color:var(--wa)}.t[data-k=er]{border-left-color:var(--er)}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+footer{border-top:1px solid var(--bd);margin-top:50px;padding:24px 0;color:var(--mu);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<header><div class="w hd">
+<div class="logo">Nsang<b>No1File</b>.vn</div>
+<div class="search"><input id="q" type="search" placeholder="🔍 Tìm file, tài liệu, source code…" aria-label="Tìm kiếm file" autocomplete="off"></div>
+<select id="cat" aria-label="Lọc danh mục"></select>
+<div id="ub"></div>
+</div></header>
+<main class="w">
+<section class="hero">
+<h1>Mua file số <span>tức thì</span>,<br>nạp ví bằng QR</h1>
+<p>Source code, template thiết kế, tài liệu và công cụ chọn lọc. Đăng nhập Google, nạp tiền bằng mã QR riêng của tài khoản, mua xong nhận link tải ngay.</p>
+<button class="p" data-act="goshop">Khám phá kho file →</button>
+<div class="st" id="st"></div>
+</section>
+<nav class="tabs" id="tabs"></nav>
+<div id="warn"></div><div id="main"></div>
+</main>
+<footer><div class="w">© 2026 NsangNo1File.vn · Cam kết giao link tải tức thì sau khi thanh toán<br>Nạp tiền: quét QR riêng của tài khoản, chuyển đúng nội dung <b class="mono">NAP &lt;mã tài khoản&gt;</b> — ví được cộng sau khi admin xác nhận đã nhận tiền.</div></footer>
+<div id="ov"></div><div id="ts"></div>
+<script type="module">
+/* ====== BƯỚC 1: DÁN CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY ====== */
+const FB={apiKey:'AIzaSyCAGFDJoG0q3slifVT5g1utFshALQ-r9a0',authDomain:'nsangno1file-shop.firebaseapp.com',projectId:'nsangno1file-shop',appId:'1:835676997369:web:5ebbe759854b711de58428'};
+/* ====== BƯỚC 2: EMAIL GOOGLE CỦA ADMIN (phải trùng với firestore.rules) ====== */
+const ADMIN_EMAILS=['xduc1846@gmail.com'];
+const MIN=10000,MAX=50000000;
+const CATS=['File iOS','File Android'];
+const ICONS={'File iOS':'🍎','File Android':'🤖'};
+// Admin thật được kiểm tra ở firestore.rules; ADMIN_EMAILS chỉ để hiện giao diện.
+const BANK={bin:'970422',name:'MB Bank',acc:'0867881460',holder:'TRAN XUAN DUC'};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+const vnd=n=>new Intl.NumberFormat('vi-VN').format(n)+'₫';
+const dt=t=>new Date(t).toLocaleString('vi-VN');
+const ini=n=>esc([...n][0].toUpperCase());
+const vLinks=s=>{const L=String(s||'').split('\n').map(x=>x.trim()).filter(Boolean),N=L.filter(x=>safeUrl(x)).length;let n=0;return L.map(x=>{const u=safeUrl(x);return u?`<a class="bt p" href="${esc(u)}" target="_blank" rel="noopener noreferrer">⬇ Tải xuống${N>1?' '+(++n):''}</a>`:`<div class="mono" style="font-size:12px;flex-basis:100%;word-break:break-all">${esc(x)}</div>`}).join('')};
+const safeUrl=s=>{try{const u=new URL(s);return /^https?:$/.test(u.protocol)?u.href:null}catch(e){return null}};
+
+/* ===== Firebase: đăng nhập Google + Firestore ===== */
+const V='https://www.gstatic.com/firebasejs/10.12.2/';
+let FBOK=false,FBERR='',initializeApp,getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged,getFirestore,doc,getDoc,setDoc,deleteDoc,addDoc,collection,onSnapshot,query,where,orderBy,writeBatch,increment,auth,fs;
+try{
+ if(/^DAN_/.test(FB.apiKey))throw new Error('Chưa dán cấu hình Firebase vào index.html (dòng const FB=...)');
+ const [A,B,C]=await Promise.all([import(V+'firebase-app.js'),import(V+'firebase-auth.js'),import(V+'firebase-firestore.js')]);
+ ({initializeApp}=A);({getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged}=B);
+ ({getFirestore,doc,getDoc,setDoc,deleteDoc,addDoc,collection,onSnapshot,query,where,orderBy,writeBatch,increment}=C);
+ const app=initializeApp(FB);auth=getAuth(app);fs=getFirestore(app);FBOK=true;
+}catch(e){FBERR=e.message||String(e)}
+const Store={save(){try{localStorage.setItem('ns1f:theme',DB.theme)}catch(e){}}};
+let DB={files:[],links:{},pending:[],me:null,theme:(()=>{try{return localStorage.getItem('ns1f:theme')||'dark'}catch(e){return'dark'}})()};
+let tab='shop',q='',cat='',editId=null,topup=null,pend=null,shown=0;
+const AuthService={login:()=>FBOK?signInWithPopup(auth,new GoogleAuthProvider()):Promise.reject(new Error(FBERR||'Firebase chưa sẵn sàng')),logout:()=>FBOK&&signOut(auth),user:()=>DB.me};
+const isAdmin=()=>!!DB.me?.admin;
+const FileService={
+ get(id){return DB.files.find(f=>f.id===id)},
+ async save(d,id){const {link,...pub}=d,nw=!id;id=id||'f'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  try{await setDoc(doc(fs,'files',id),nw?{...pub,at:Date.now()}:pub,{merge:true});await setDoc(doc(fs,'secrets',id),{link})}catch(er){toast('Lỗi lưu file: '+er.code,'er')}},
+ async remove(id){try{await deleteDoc(doc(fs,'files',id));await deleteDoc(doc(fs,'secrets',id))}catch(er){toast('Lỗi xóa: '+er.code,'er')}}
+};
+const WalletService={
+ async buy(u,f){
+  if(u.owned.some(o=>o.id===f.id))throw new Error('Bạn đã sở hữu file này');
+  if(u.balance<f.price)throw new Error('Số dư không đủ');
+  const b=writeBatch(fs),at=Date.now();
+  b.update(doc(fs,'users',u.uid),{balance:increment(-f.price),last:f.id});
+  b.set(doc(fs,'users',u.uid,'owned',f.id),{name:f.name,icon:f.icon,price:f.price,at});
+  b.set(doc(fs,'users',u.uid,'tx','GD'+at.toString(36).toUpperCase()),{type:'mua',amt:-f.price,note:f.name,at,after:u.balance-f.price});
+  await b.commit()}
+};
+const refresh=()=>{renderUser(false);renderTabs();if(!(tab==='admin'&&document.activeElement?.closest?.('#af,#bk')))renderMain();renderStats()};
+let unsubs=[];
+if(FBOK)onSnapshot(collection(fs,'files'),s=>{DB.files=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at||0)-(a.at||0));refresh()},er=>toast('Không tải được kho file: '+er.code,'er'));
+if(FBOK)onAuthStateChanged(auth,async fu=>{
+ unsubs.forEach(f=>f());unsubs=[];DB.me=null;DB.links={};DB.pending=[];
+ if(!fu){refresh();return}
+ try{
+  const ref=doc(fs,'users',fu.uid),email=(fu.email||'').toLowerCase();
+  if(!(await getDoc(ref)).exists())await setDoc(ref,{name:(fu.displayName||email.split('@')[0]).slice(0,40),email,code:'NS'+fu.uid.slice(0,6).toUpperCase(),balance:0,at:Date.now()});
+  DB.me={uid:fu.uid,name:fu.displayName||email,email,code:'',balance:0,owned:[],tx:[],admin:ADMIN_EMAILS.includes(email)&&fu.emailVerified};
+  unsubs.push(onSnapshot(ref,s=>{if(DB.me&&s.exists()){Object.assign(DB.me,s.data());refresh()}}));
+  unsubs.push(onSnapshot(collection(ref,'owned'),s=>{
+   DB.me.owned=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.at-a.at);
+   s.docs.forEach(d=>{if(!(d.id in DB.links)){DB.links[d.id]='';getDoc(doc(fs,'secrets',d.id)).then(x=>{DB.links[d.id]=x.data()?.link||'';refresh()}).catch(()=>{})}});refresh()}));
+  unsubs.push(onSnapshot(query(collection(ref,'tx'),orderBy('at','desc')),s=>{DB.me.tx=s.docs.map(d=>({id:d.id,...d.data()}));refresh()}));
+  if(DB.me.admin){
+   unsubs.push(onSnapshot(query(collection(fs,'topups'),where('status','==','pending')),s=>{DB.pending=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.at-b.at);refresh()}));
+   unsubs.push(onSnapshot(collection(fs,'secrets'),s=>{s.docs.forEach(d=>DB.links[d.id]=d.data().link);refresh()}))}
+  refresh()}catch(er){toast('Lỗi tải tài khoản: '+(er.code||er.message),'er')}});
+
+/* ===== VietQR (EMVCo/NAPAS): chuỗi QR động có số tiền + nội dung ===== */
+const tlv=(i,v)=>i+String(v.length).padStart(2,'0')+v;
+const crc16=s=>{let c=0xFFFF;for(let i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(let k=0;k<8;k++)c=c&0x8000?((c<<1)^0x1021)&0xFFFF:(c<<1)&0xFFFF}return c.toString(16).toUpperCase().padStart(4,'0')};
+const vietqr=(amt,memo)=>{
+ const member=tlv('00',BANK.bin)+tlv('01',BANK.acc);
+ const p=tlv('00','01')+tlv('01','12')+tlv('38',tlv('00','A000000727')+tlv('01',member)+tlv('02','QRIBFTTA'))+tlv('53','704')+tlv('54',String(amt))+tlv('58','VN')+tlv('62',tlv('08',memo))+'6304';
+ return p+crc16(p)};
+
+/* ===== Tiện ích giao diện ===== */
+function toast(m,k='ok'){const t=document.createElement('div');t.className='t';t.dataset.k=k;t.textContent=m;$('#ts').append(t);setTimeout(()=>t.remove(),3200)}
+async function copy(t){try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.append(a);a.select();try{document.execCommand('copy')}catch(_){}a.remove()}toast('Đã sao chép','ok')}
+const openModal=h=>{$('#ov').innerHTML='<div class="mb" role="dialog" aria-modal="true">'+h+'</div>';$('#ov').classList.add('on')};
+const closeModal=()=>{$('#ov').classList.remove('on');$('#ov').innerHTML='';topup=null;pend=null};
+const applyTheme=()=>{document.documentElement.dataset.theme=DB.theme};
+function countUp(to){const el=$('#bal'),from=shown,t0=performance.now();shown=to;if(!el)return;
+ const step=t=>{const k=Math.min(1,(t-t0)/650);el.textContent=vnd(Math.round(from+(to-from)*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
+const lock=m=>`<div class="li" style="display:block;text-align:center">🔒 ${m}<br><br><button class="p" data-act="login">Đăng nhập Google</button></div>`;
+const needLogin=()=>{toast('Vui lòng đăng nhập Google để tiếp tục','wa');openModal(vLogin())};
+
+/* ===== Hiển thị ===== */
+function renderUser(anim){
+ const u=AuthService.user();if(!anim)shown=u?u.balance:0;
+ $('#ub').innerHTML=(u?`<button data-act="topup" title="Số dư ví">💰 <span id="bal" class="mono">${vnd(shown)}</span></button>`:'')
+  +'<button class="p" data-act="topup">Nạp tiền QR</button>'
+  +`<button data-act="theme" aria-label="Đổi giao diện">${DB.theme==='dark'?'☀️':'🌙'}</button>`
+  +(u?`<button data-act="profile" class="row" style="gap:8px"><span class="av">${ini(u.name)}</span><span style="text-align:left;line-height:1.2"><b style="font-size:13px">${esc(u.name)}</b><br><small class="mono mu">${u.code}</small></span></button>`:'<button data-act="login">🔐 Đăng nhập Google</button>');
+ if(u&&anim)countUp(u.balance)}
+const renderTabs=()=>{$('#tabs').innerHTML=[['shop','🛍️ Kho File'],['owned','📥 File Đã Mua'],['hist','🧾 Lịch Sử Giao Dịch'],['admin','⚙️ Quản Trị']].map(([k,t])=>`<button class="${k===tab?'on':''}" data-act="tab" data-t="${k}">${t}</button>`).join('')};
+const renderStats=()=>{$('#st').innerHTML=`<div><b class="mono">${DB.files.length}</b><small>file sẵn sàng</small></div><div><b>🔐 Google</b><small>đăng nhập an toàn</small></div><div><b>🔒 Bảo mật</b><small>link chỉ mở khi đã mua</small></div>`};
+const renderMain=()=>{$('#main').innerHTML=({shop:vShop,owned:vOwned,hist:vHist,admin:vAdmin})[tab]()};
+const renderAll=()=>{renderUser(false);renderTabs();renderMain();renderStats()};
+
+function vShop(){
+ const k=q.trim().toLowerCase(),L=DB.files.filter(f=>(!cat||f.cat===cat)&&(!k||(f.name+' '+f.desc+' '+f.cat).toLowerCase().includes(k))),u=AuthService.user();
+ if(!L.length)return `<div class="li" style="display:block;text-align:center">😶 Không tìm thấy file phù hợp${k?` cho “${esc(q.trim())}”`:''}.<br><br><button data-act="reset">Xóa bộ lọc</button></div>`;
+ return '<div class="grid">'+L.map(f=>{
+  const own=u&&u.owned.some(o=>o.id===f.id);
+  return `<article class="card"><div class="row" style="justify-content:space-between"><span class="ic">${f.icon}</span>${own?'<span class="bd ok">✓ Đã sở hữu</span>':''}</div>
+<h3 style="font-size:16px">${esc(f.name)}</h3><p class="mu" style="font-size:13px;flex:1">${esc(f.desc)}</p>
+<small class="mu mono">${esc(f.cat)} · ${esc(f.meta)}</small>
+<div class="row" style="justify-content:space-between"><span class="price mono">${vnd(f.price)}</span>${own?`<span class="row" style="flex:1;justify-content:flex-end">${vLinks(DB.links[f.id])||'<small class="mu">Đang tải link…</small>'}</span>`:`<button class="p" data-act="buy" data-id="${f.id}">Mua ngay</button>`}</div></article>`}).join('')+'</div>'}
+
+function vOwned(){
+ const u=AuthService.user();if(!u)return lock('Đăng nhập để xem file đã mua');
+ if(!u.owned.length)return '<div class="li" style="display:block;text-align:center">Bạn chưa mua file nào.<br><br><button class="p" data-act="tab" data-t="shop">Xem kho file</button></div>';
+ return u.owned.map(o=>{return `<div class="li"><span class="ic">${o.icon}</span><div style="flex:1 1 200px"><b>${esc(o.name)}</b><br><small class="mu">Mua lúc ${dt(o.at)} · ${vnd(o.price)}</small></div><span class="bd ok">✓ Đã sở hữu</span>${vLinks(DB.links[o.id])||'<small class="mu">Đang tải link…</small>'}<button data-act="cp" data-v="${esc(DB.links[o.id])}">Copy</button></div>`}).join('')}
+
+function vHist(){
+ const u=AuthService.user();if(!u)return lock('Đăng nhập để xem lịch sử giao dịch');
+ if(!u.tx.length)return '<div class="li" style="display:block;text-align:center">Chưa có giao dịch nào.</div>';
+ return u.tx.map(t=>`<div class="li"><span class="bd ${t.type==='nap'?'ok':''}">${t.type==='nap'?'Nạp tiền':'Mua file'}</span><div style="flex:1 1 200px"><b>${esc(t.note)}</b><br><small class="mu mono">${t.id} · ${dt(t.at)}</small></div><div style="text-align:right"><b class="mono" style="color:${t.amt>0?'var(--ok)':'var(--tx)'}">${t.amt>0?'+':''}${vnd(t.amt)}</b><br><small class="mu mono">Dư ${vnd(t.after)}</small></div></div>`).join('')}
+
+const vPend=()=>`<h3 style="margin-bottom:10px">Yêu cầu nạp tiền chờ duyệt (${DB.pending.length})</h3>`+(DB.pending.length?DB.pending.map(t=>`<div class="li"><span class="bd">${esc(t.code)}</span><div style="flex:1 1 180px"><b>${esc(t.name)}</b><br><small class="mu mono">NAP ${esc(t.code)} · ${dt(t.at)}</small></div><b class="mono">${vnd(t.amount)}</b><button class="sm p" data-act="approve" data-id="${t.id}">Duyệt</button><button class="sm dg" data-act="reject" data-id="${t.id}">Từ chối</button></div>`).join(''):'<div class="li mu">Không có yêu cầu nào.</div>')+'<div style="height:14px"></div>';
+function vAdmin(){
+ const u=AuthService.user();
+ if(!u)return lock('Đăng nhập tài khoản quản trị để quản lý kho file');
+ if(!u.admin)return lock('Tài khoản này không có quyền quản trị. Hãy đăng nhập bằng email admin.');
+ const e=(editId&&FileService.get(editId))||{};
+ return vPend()+`<div class="li" style="display:block"><h3>${e.id?'Sửa file':'Thêm file mới'}</h3>
+<form id="af" class="grid" style="margin-top:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))">
+<input name="name" placeholder="Tên file" value="${esc(e.name)}" required>
+<select name="cat">${CATS.map(c=>`<option ${c===e.cat?'selected':''}>${c}</option>`).join('')}</select>
+<input name="price" type="number" min="1000" step="1000" placeholder="Giá bán (VNĐ)" value="${esc(e.price)}" required>
+<input name="meta" placeholder="Định dạng · dung lượng" value="${esc(e.meta)}">
+<textarea name="link" rows="3" placeholder="Link tải (mỗi link 1 dòng, có thể thêm dòng ghi chú/lệnh)" required style="grid-column:1/-1">${esc(DB.links[e.id])}</textarea>
+<textarea name="desc" rows="2" placeholder="Mô tả" style="grid-column:1/-1">${esc(e.desc)}</textarea>
+<div class="row"><button class="p">${e.id?'Lưu thay đổi':'Thêm file'}</button>${e.id?'<button type="button" data-act="cancel">Hủy sửa</button>':''}</div></form></div>
+<div class="li" id="bk" style="display:block;margin-top:14px"><h3>Nhập hàng loạt</h3><p class="mu" style="font-size:13px;margin:6px 0 10px">Dán nội dung file <b>du-lieu-file.txt</b> vào đây rồi bấm nhập.</p><textarea id="bulk" rows="5" placeholder="iOS | TÊN | GIÁ&#10;link…&#10;---" style="width:100%"></textarea><button class="p" data-act="bulk" style="margin-top:8px">Nhập vào kho</button></div>
+<h3 style="margin:22px 0 10px">Kho file & giá bán (${DB.files.length})</h3>`
+ +DB.files.map(f=>`<div class="li"><span>${f.icon}</span><b style="flex:1 1 160px">${esc(f.name)}</b><input class="pi mono" type="number" min="1000" step="1000" value="${f.price}" style="width:130px" data-id="${f.id}" aria-label="Giá bán"><button class="sm p" data-act="price" data-id="${f.id}">Lưu giá</button><button class="sm" data-act="edit" data-id="${f.id}">Sửa</button><button class="sm dg" data-act="del" data-id="${f.id}">Xóa</button></div>`).join('')}
+
+const vLogin=()=>`<h3>Đăng nhập</h3><p class="mu" style="margin:8px 0 14px">Đăng nhập bằng tài khoản Google thật. Lần đầu hệ thống tự tạo tài khoản và mã nạp tiền cho bạn.</p><button class="p" style="width:100%" data-act="google">🔐 Tiếp tục với Google</button><button data-act="close" style="width:100%;margin-top:8px">Đóng</button>`;
+
+function vTopup(){
+ const u=AuthService.user();
+ return `<h3>Nạp tiền bằng QR</h3>
+<p class="mu">Tài khoản: <b>${esc(u.name)}</b> · Mã nạp tiền: <b class="mono">${u.code}</b></p>
+<div class="row" style="margin:12px 0">${[20000,50000,100000,200000,500000].map(a=>`<button class="sm" data-act="amt" data-a="${a}">${vnd(a)}</button>`).join('')}</div>
+<input id="amt" type="number" min="${MIN}" max="${MAX}" step="1000" placeholder="Hoặc nhập số tiền khác (VNĐ)" value="${topup.amt}" style="width:100%">
+<div style="margin:14px 0;text-align:center"><div id="qr" style="display:inline-block;background:#fff;padding:10px;border-radius:12px"></div><p id="qmsg" class="mu" style="font-size:13px;margin-top:6px"></p></div>
+<div id="info" class="li" style="display:block"></div>
+<hr><p class="mu" style="font-size:13px;margin-bottom:8px">Chuyển khoản xong, bấm nút dưới để báo admin. Ví được cộng ngay khi admin xác nhận đã nhận tiền.</p><button id="hook" class="p" data-act="hook" style="width:100%">✅ Tôi đã chuyển khoản</button>
+<button data-act="close" style="width:100%;margin-top:12px">Đóng</button>`}
+
+function drawQR(){
+ if(!topup||!$('#qr'))return;
+ const u=AuthService.user(),a=topup.amt,ok=Number.isInteger(a)&&a>=MIN&&a<=MAX,memo='NAP '+u.code,box=$('#qr'),hasLib=typeof QRCode!=='undefined';
+ box.innerHTML='';box.style.display=ok&&hasLib?'inline-block':'none';$('#hook').disabled=!ok;
+ let m=ok?'Quét bằng app ngân hàng bất kỳ (VietQR) — số tiền và nội dung đã điền sẵn':`Nhập số tiền từ ${vnd(MIN)} đến ${vnd(MAX)}`;
+ if(ok){if(hasLib)new QRCode(box,{text:vietqr(a,memo),width:200,height:200,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});else m='Không tải được thư viện QR (cần mạng lần đầu). Hãy chuyển khoản thủ công theo thông tin bên dưới.'}
+ $('#qmsg').textContent=m;
+ $('#info').innerHTML=[['Ngân hàng',esc(BANK.name)],['Số tài khoản',`<span class="mono">${BANK.acc}</span> <button class="sm" data-act="cp" data-v="${BANK.acc}">Copy</button>`],['Chủ tài khoản',esc(BANK.holder)],['Số tiền',`<b class="mono">${ok?vnd(a):'—'}</b>`],['Nội dung CK (bắt buộc)',`<b class="mono">${memo}</b> <button class="sm" data-act="cp" data-v="${memo}">Copy</button>`]].map(([k,v])=>`<div class="kv"><span class="mu">${k}</span><span>${v}</span></div>`).join('')}
+
+function openTopup(a){
+ const u=AuthService.user();if(!u)return needLogin();
+ topup={amt:Math.min(MAX,Math.max(MIN,Math.ceil((a||50000)/1000)*1000))};
+ openModal(vTopup());drawQR()}
+
+async function doLogin(){try{await AuthService.login();closeModal();toast('Đăng nhập thành công','ok')}catch(er){toast(er.code==='auth/popup-closed-by-user'?'Bạn đã đóng cửa sổ đăng nhập':'Lỗi đăng nhập: '+(er.code||er.message),'er')}}
+
+function buy(id){
+ const u=AuthService.user();if(!u)return needLogin();
+ const f=FileService.get(id);if(!f)return toast('File không còn tồn tại','er');
+ if(u.owned.some(o=>o.id===id))return toast('Bạn đã sở hữu file này','wa');
+ if(u.balance<f.price){toast(`Thiếu ${vnd(f.price-u.balance)} — mở nạp QR đúng số còn thiếu`,'wa');return openTopup(f.price-u.balance)}
+ openModal(`<h3>Xác nhận mua</h3><p style="margin-top:8px">${esc(f.name)}</p><p class="price mono" style="margin:6px 0">${vnd(f.price)}</p><p class="mu">Số dư sau khi mua: <b class="mono">${vnd(u.balance-f.price)}</b></p><div class="row" style="margin-top:14px"><button class="p" data-act="buyok" data-id="${f.id}">Thanh toán</button><button data-act="close">Hủy</button></div>`)}
+
+function readFile(fd){
+ const name=String(fd.get('name')).trim(),price=Number(fd.get('price')),link=String(fd.get('link')).split('\n').map(x=>x.trim()).filter(Boolean).join('\n'),c=String(fd.get('cat'));
+ if(name.length<3)return{e:'Tên file tối thiểu 3 ký tự'};
+ if(!Number.isInteger(price)||price<1000||price>1e8)return{e:'Giá phải là số nguyên từ 1.000₫ đến 100.000.000₫'};
+ if(!link.split('\n').some(x=>safeUrl(x))||link.length>3000)return{e:'Cần ít nhất 1 link bắt đầu bằng http:// hoặc https://'};
+ return{d:{name,price,link,cat:CATS.includes(c)?c:CATS[0],meta:String(fd.get('meta')).trim()||'—',desc:String(fd.get('desc')).trim(),icon:ICONS[c]||'📦'}}}
+function saveFile(fd){
+ if(!isAdmin())return toast('Cần quyền quản trị','er');
+ const r=readFile(fd);if(r.e)return toast(r.e,'er');
+ const was=editId;FileService.save(r.d,editId);editId=null;renderMain();renderStats();toast(was?'Đã cập nhật file':'Đã thêm file mới','ok')}
+
+/* ===== Sự kiện ===== */
+document.addEventListener('click',e=>{
+ if(e.target.id==='ov')return closeModal();
+ const b=e.target.closest('[data-act]');if(!b)return;
+ const d=b.dataset,u=AuthService.user();
+ switch(d.act){
+ case'tab':tab=d.t;renderTabs();renderMain();break;
+ case'goshop':tab='shop';renderTabs();renderMain();$('#tabs').scrollIntoView({behavior:'smooth'});break;
+ case'login':openModal(vLogin());break;
+ case'google':doLogin();break;
+ case'profile':openModal(`<h3>Hồ sơ</h3><div style="margin:12px 0"><div class="kv"><span class="mu">Tên</span><b>${esc(u.name)}</b></div><div class="kv"><span class="mu">Email</span><span>${esc(u.email)}</span></div><div class="kv"><span class="mu">Mã nạp tiền</span><b class="mono">${u.code}</b></div><div class="kv"><span class="mu">Số dư</span><b class="mono">${vnd(u.balance)}</b></div></div><div class="row"><button class="dg" data-act="logout">Đăng xuất</button><button data-act="close">Đóng</button></div>`);break;
+ case'logout':AuthService.logout();closeModal();renderAll();toast('Đã đăng xuất','ok');break;
+ case'theme':DB.theme=DB.theme==='dark'?'light':'dark';Store.save();applyTheme();renderUser(false);break;
+ case'reset':q='';cat='';$('#q').value='';$('#cat').value='';renderMain();break;
+ case'topup':openTopup();break;
+ case'amt':if(topup){topup.amt=+d.a;$('#amt').value=d.a;drawQR()}break;
+ case'cp':copy(d.v);break;
+ case'hook':{if(!topup||!u)break;const amt=topup.amt;
+  addDoc(collection(fs,'topups'),{uid:u.uid,code:u.code,name:u.name,amount:amt,status:'pending',at:Date.now()}).then(()=>{closeModal();toast('Đã gửi yêu cầu nạp '+vnd(amt)+' — chờ admin duyệt','ok')}).catch(er=>toast('Lỗi gửi yêu cầu: '+er.code,'er'))}break;
+ case'bulk':{if(!isAdmin())break;const raw=($('#bulk')?.value||'').trim();if(!raw)return toast('Hãy dán dữ liệu trước','er');
+  const items=raw.split(/\n-{3,}\s*(?:\n|$)/).map(b=>b.split('\n').map(x=>x.trim()).filter(Boolean)).filter(l=>l.length>1).map(l=>{const [c,n,p]=l[0].split('|').map(x=>x.trim()),cat=/android/i.test(c)?'File Android':'File iOS';return{name:n,price:Number(p),cat,link:l.slice(1).join('\n'),meta:'Link MediaFire',desc:'Gói Aimlock cho '+(cat==='File iOS'?'iOS':'Android')+'. Link tải hiện ngay sau khi mua.',icon:ICONS[cat]}});
+  if(!items.length||items.some(i=>!i.name||!(i.price>=1000)))return toast('Sai định dạng: mỗi mục cần dòng "iOS | Tên | Giá"','er');
+  (async()=>{for(const i of items)await FileService.save(i);toast('Đã nhập '+items.length+' file','ok')})()}break;
+ case'approve':{if(!isAdmin())break;const p=DB.pending.find(x=>x.id===d.id);if(!p)break;
+  getDoc(doc(fs,'users',p.uid)).then(s=>{const at=Date.now(),b=writeBatch(fs);
+   b.update(doc(fs,'topups',p.id),{status:'done',doneAt:at});
+   b.update(doc(fs,'users',p.uid),{balance:increment(p.amount)});
+   b.set(doc(fs,'users',p.uid,'tx','GD'+at.toString(36).toUpperCase()),{type:'nap',amt:p.amount,note:'Nạp qua QR · '+p.code,at,after:(s.data()?.balance||0)+p.amount});
+   return b.commit()}).then(()=>toast('Đã cộng '+vnd(p.amount)+' cho '+p.code,'ok')).catch(er=>toast('Lỗi duyệt: '+er.code,'er'))}break;
+ case'reject':if(isAdmin())setDoc(doc(fs,'topups',d.id),{status:'rejected'},{merge:true}).catch(er=>toast(er.code,'er'));break;
+ case'buy':buy(d.id);break;
+ case'buyok':{
+  const f=FileService.get(d.id);if(!u||!f){closeModal();toast('Không thể hoàn tất giao dịch','er');break}
+  WalletService.buy(u,f).then(()=>{closeModal();tab='owned';renderTabs();renderMain();toast('Mua thành công — link tải đã được mở khóa','ok')}).catch(er=>{closeModal();toast(er.message||er.code,'er')})}break;
+ case'edit':if(!isAdmin())break;editId=d.id;renderMain();$('#af').scrollIntoView({behavior:'smooth',block:'center'});break;
+ case'cancel':editId=null;renderMain();break;
+ case'price':{
+  if(!isAdmin())break;
+  const v=Number($(`.pi[data-id="${d.id}"]`).value),f=FileService.get(d.id);
+  if(!f||!Number.isInteger(v)||v<1000||v>1e8)return toast('Giá phải là số nguyên từ 1.000₫ đến 100.000.000₫','er');
+  setDoc(doc(fs,'files',f.id),{price:v},{merge:true}).then(()=>toast(`Đã cập nhật giá: ${vnd(v)}`,'ok')).catch(er=>toast(er.code,'er'))}break;
+ case'del':{
+  if(!isAdmin())break;const f=FileService.get(d.id);if(!f)break;
+  pend=()=>{FileService.remove(f.id);if(editId===f.id)editId=null;renderMain();renderStats();toast('Đã xóa file','ok')};
+  openModal(`<h3>Xóa file?</h3><p class="mu" style="margin:8px 0 14px">“${esc(f.name)}” sẽ bị gỡ khỏi kho. Người đã mua vẫn giữ quyền tải.</p><div class="row"><button class="dg" data-act="yes">Xóa</button><button data-act="close">Hủy</button></div>`)}break;
+ case'yes':{const fn=pend;closeModal();if(fn)fn()}break;
+ case'close':closeModal();break;
+ }});
+document.addEventListener('input',e=>{
+ const t=e.target;
+ if(t.id==='q'){q=t.value;if(tab!=='shop'){tab='shop';renderTabs()}renderMain()}
+ else if(t.id==='amt'&&topup){const n=Number(t.value);topup.amt=t.value!==''&&Number.isFinite(n)?Math.round(n):0;drawQR()}});
+document.addEventListener('change',e=>{if(e.target.id==='cat'){cat=e.target.value;if(tab!=='shop'){tab='shop';renderTabs()}renderMain()}});
+document.addEventListener('submit',e=>{
+ e.preventDefault();const f=e.target,fd=new FormData(f);
+ if(f.id==='lf')doLogin(fd.get('name'),fd.get('email'));
+ else if(f.id==='af')saveFile(fd)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+/* ===== Khởi động ===== */
+$('#cat').innerHTML='<option value="">Tất cả danh mục</option>'+CATS.map(c=>`<option>${c}</option>`).join('');
+applyTheme();renderAll();
+if(!FBOK)$('#warn').innerHTML='<div class="li" style="display:block;border-color:var(--wa)">⚠️ <b>Web chưa kết nối Firebase</b><br><span class="mu">'+esc(FBERR)+'. Mở file index.html, dán 4 giá trị Firebase vào dòng <span class="mono">const FB=</span>, rồi đưa lên GitHub Pages (không mở trực tiếp từ app Tệp trên điện thoại).</span></div>';
+</script>
+</body>
+</html>
