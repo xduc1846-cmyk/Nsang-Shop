@@ -36,6 +36,16 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .st{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:24px}
 .st div{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:10px 18px}
 .st b{display:block;font-size:19px}.st small{color:var(--mu)}
+.mep .hero,.mep #cats{display:none}
+.me{max-width:640px;margin:0 auto}.me .card{margin-bottom:14px}
+.pf{display:flex;gap:14px;align-items:center}.pf .av{width:64px;height:64px;font-size:26px;border-radius:16px}
+.pf h2{font-size:20px;display:flex;align-items:center;gap:6px}.pf small{color:var(--mu)}.pf .dc{color:#6366F1;font-weight:700;font-size:14px}
+.wl{background:rgba(99,102,241,.1);border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.wl small{font-weight:700;letter-spacing:.04em;color:var(--mu)}.wl b{display:block;font-size:26px}
+.mi{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;background:none;border-radius:10px;padding:13px 10px;font-weight:600}
+.mi:hover{background:rgba(99,102,241,.08)}.mi.dg{color:var(--er)}
+.rk{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed var(--bd)}.rk:last-child{border:0}
+.rk i{width:30px;font-style:normal;font-weight:800;text-align:center}.rk span{flex:1}
 .tabs{display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--bd);margin:10px 0 20px}
 .tabs button{border:0;background:none;border-radius:0;color:var(--mu);border-bottom:2px solid transparent;white-space:nowrap}
 .tabs button.on{color:var(--tx);border-bottom-color:#6366F1}
@@ -74,14 +84,13 @@ footer{border-top:1px solid var(--bd);margin-top:50px;padding:24px 0;color:var(-
 <body>
 <header><div class="w hd">
 <div class="logo">Nsang<b>No1File</b>.vn</div>
-<div class="search"><input id="q" type="search" placeholder="🔍 Tìm file, tài liệu, source code…" aria-label="Tìm kiếm file" autocomplete="off"></div>
 <select id="cat" aria-label="Lọc danh mục"></select>
 <div id="ub"></div>
 </div></header>
 <main class="w">
 <section class="hero">
-<h1>Mua file số <span>tức thì</span>,<br>nạp ví bằng QR</h1>
-<p>Source code, template thiết kế, tài liệu và công cụ chọn lọc. Đăng nhập Google, nạp tiền bằng mã QR riêng của tài khoản, mua xong nhận link tải ngay.</p>
+<h1>Hệ Thống Bán File<br><span>Vĩnh Viễn Uy Tín</span></h1>
+<p>Cung cấp File Aimlock-Nhẹ Tâm Tác Dụng Cao Hỗ Trợ Anh Em Cải Thiện Kĩ Năng Kéo Tâm, Tăng Tỉ Lệ Headshot</p>
 <button class="p" data-act="goshop">Khám phá kho file →</button>
 <div class="st" id="st"></div>
 </section>
@@ -114,16 +123,16 @@ const safeUrl=s=>{try{const u=new URL(s);return /^https?:$/.test(u.protocol)?u.h
 
 /* ===== Firebase: đăng nhập Google + Firestore ===== */
 const V='https://www.gstatic.com/firebasejs/10.12.2/';
-let FBOK=false,FBERR='',initializeApp,getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged,getFirestore,doc,getDoc,getDocs,setDoc,deleteDoc,addDoc,collection,onSnapshot,query,where,orderBy,writeBatch,increment,auth,fs;
+let FBOK=false,FBERR='',initializeApp,getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged,getFirestore,doc,getDoc,getDocs,setDoc,deleteDoc,addDoc,collection,onSnapshot,query,where,orderBy,limit,writeBatch,increment,auth,fs;
 try{
  if(/^DAN_/.test(FB.apiKey))throw new Error('Chưa dán cấu hình Firebase vào index.html (dòng const FB=...)');
  const [A,B,C]=await Promise.all([import(V+'firebase-app.js'),import(V+'firebase-auth.js'),import(V+'firebase-firestore.js')]);
  ({initializeApp}=A);({getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged}=B);
- ({getFirestore,doc,getDoc,getDocs,setDoc,deleteDoc,addDoc,collection,onSnapshot,query,where,orderBy,writeBatch,increment}=C);
+ ({getFirestore,doc,getDoc,getDocs,setDoc,deleteDoc,addDoc,collection,onSnapshot,query,where,orderBy,limit,writeBatch,increment}=C);
  const app=initializeApp(FB);auth=getAuth(app);fs=getFirestore(app);FBOK=true;
 }catch(e){FBERR=e.message||String(e)}
 const Store={save(){try{localStorage.setItem('ns1f:theme',DB.theme)}catch(e){}}};
-let DB={files:[],links:{},pending:[],me:null,theme:(()=>{try{return localStorage.getItem('ns1f:theme')||'dark'}catch(e){return'dark'}})()};
+let DB={top:[],files:[],links:{},pending:[],me:null,theme:(()=>{try{return localStorage.getItem('ns1f:theme')||'dark'}catch(e){return'dark'}})()};
 let tab='shop',q='',cat='',editId=null,topup=null,pend=null,shown=0;
 const AuthService={login:()=>FBOK?signInWithPopup(auth,new GoogleAuthProvider()):Promise.reject(new Error(FBERR||'Firebase chưa sẵn sàng')),logout:()=>FBOK&&signOut(auth),user:()=>DB.me};
 const isAdmin=()=>!!DB.me?.admin;
@@ -146,6 +155,7 @@ const WalletService={
 const refresh=()=>{renderUser(false);renderTabs();if(!(tab==='admin'&&document.activeElement?.closest?.('#af,#bk,#mc')))renderMain();renderStats()};
 let unsubs=[];
 if(FBOK)onSnapshot(collection(fs,'files'),s=>{DB.files=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at||0)-(a.at||0));refresh()},er=>toast('Không tải được kho file: '+er.code,'er'));
+if(FBOK)onSnapshot(query(collection(fs,'board'),orderBy('total','desc'),limit(10)),s=>{DB.top=s.docs.map(d=>({id:d.id,...d.data()}));refresh()},()=>{});
 if(FBOK)onAuthStateChanged(auth,async fu=>{
  unsubs.forEach(f=>f());unsubs=[];DB.me=null;DB.links={};DB.pending=[];
  if(!fu){refresh();return}
@@ -191,10 +201,10 @@ function renderUser(anim){
   +`<button data-act="theme" aria-label="Đổi giao diện">${DB.theme==='dark'?'☀️':'🌙'}</button>`
   +(u?`<button data-act="profile" class="row" style="gap:8px"><span class="av">${ini(u.name)}</span><span style="text-align:left;line-height:1.2"><b style="font-size:13px">${esc(u.name)}</b><br><small class="mono mu">${u.code}</small></span></button>`:'<button data-act="login">🔐 Đăng nhập Google</button>');
  if(u&&anim)countUp(u.balance)}
-const renderTabs=()=>{if(tab==='admin'&&!isAdmin())tab='shop';$('#tabs').innerHTML=[['shop','🛍️ Kho File'],['owned','📥 File Đã Mua'],['hist','🧾 Lịch Sử Giao Dịch'],...(isAdmin()?[['admin','⚙️ Quản Trị · Nạp tiền']]:[])].map(([k,t])=>`<button class="${k===tab?'on':''}" data-act="tab" data-t="${k}">${t}</button>`).join('')};
+const renderTabs=()=>{if(tab==='admin'&&!isAdmin())tab='shop';$('#tabs').innerHTML=[['shop','🛍️ Kho File'],['owned','📥 File Đã Mua'],['hist','🧾 Lịch Sử Giao Dịch'],['me','👤 Tôi'],...(isAdmin()?[['admin','⚙️ Quản Trị · Nạp tiền']]:[])].map(([k,t])=>`<button class="${k===tab?'on':''}" data-act="tab" data-t="${k}">${t}</button>`).join('')};
 const renderCats=()=>{$('#cats').innerHTML=CATS.map(c=>{const n=DB.files.filter(f=>f.cat===c).length;return `<button class="card cc ${cat===c?'on':''}" data-act="cat" data-c="${c}"><span class="ic">${ICONS[c]}</span><span><b style="font-size:17px">${c}</b><br><small>${n} gói · bấm để xem bảng giá</small></span></button>`}).join('')};
-const renderStats=()=>{renderCats();$('#st').innerHTML=`<div><b class="mono">${DB.files.length}</b><small>file sẵn sàng</small></div><div><b>🔐 Google</b><small>đăng nhập an toàn</small></div><div><b>🔒 Bảo mật</b><small>link chỉ mở khi đã mua</small></div>`};
-const renderMain=()=>{$('#main').innerHTML=({shop:vShop,owned:vOwned,hist:vHist,admin:vAdmin})[tab]()};
+const renderStats=()=>{renderCats();$('#st').innerHTML=`<div><b>🛡️ Bảo hành uy tín</b></div>`};
+const renderMain=()=>{document.body.classList.toggle('mep',tab==='me');$('#main').innerHTML=({shop:vShop,owned:vOwned,hist:vHist,me:vMe,admin:vAdmin})[tab]()};
 const renderAll=()=>{renderUser(false);renderTabs();renderMain();renderStats()};
 
 function vShop(){
@@ -206,6 +216,17 @@ function vShop(){
 <h3 style="font-size:16px">${esc(f.name)}</h3><p class="mu" style="font-size:13px;flex:1">${esc(f.desc)}</p>
 <small class="mu mono">${esc(f.cat)} · ${esc(f.meta)}</small>
 <div class="row" style="justify-content:space-between"><span class="price mono">${vnd(f.price)}</span>${own?`<span class="row" style="flex:1;justify-content:flex-end">${vLinks(DB.links[f.id])||'<small class="mu">Đang tải link…</small>'}</span>`:`<button class="p" data-act="buy" data-id="${f.id}">Mua ngay</button>`}</div></article>`}).join('')+'</div>'}
+
+const mk=n=>{const a=[...String(n||'Ẩn danh')];return a.length<=2?a[0]+'***':a.slice(0,2).join('')+'***'+a[a.length-1]};
+function vMe(){
+ const u=AuthService.user();if(!u)return lock('Đăng nhập để xem tài khoản & cài đặt');
+ const naps=u.tx.filter(t=>t.type==='nap').slice(0,5),medal=['🥇','🥈','🥉'];
+ return `<div class="me"><div class="card"><div class="pf"><span class="av">${ini(u.name)}</span><div><h2>${esc(u.name)} <span style="color:#6366F1" title="Đã xác thực Google">✔</span></h2><small>@${esc((u.email||'').split('@')[0])}</small></div></div>
+<div class="wl"><div><small>SỐ DƯ VÍ</small><b class="mono">${vnd(u.balance)}</b></div><button class="p" data-act="topup">＋ Nạp ví</button></div>
+<div><div class="kv"><span class="mu">✉️ Email</span><span>${esc(u.email)}</span></div><div class="kv"><span class="mu">📅 Ngày tham gia</span><span>${u.at?dt(u.at):'—'}</span></div><div class="kv"><span class="mu">🔑 Mã nạp tiền</span><b class="mono">${esc(u.code)}</b></div></div></div>
+<div class="card" style="gap:0"><button class="mi" data-act="tab" data-t="owned">📥 File đã mua</button><button class="mi" data-act="tab" data-t="hist">🧾 Biến động số dư</button><button class="mi" data-act="theme">${DB.theme==='dark'?'☀️ Giao diện sáng':'🌙 Giao diện tối'}</button><button class="mi dg" data-act="logout">↪ Đăng xuất</button></div>
+<div class="card"><h3>🕒 Lịch sử nạp gần nhất</h3>${naps.length?naps.map(t=>`<div class="kv"><span><b class="mono" style="color:var(--ok)">+${vnd(t.amt)}</b><br><small class="mu mono">${esc(t.id)} · ${dt(t.at)}</small></span><span class="bd ok">Thành công</span></div>`).join(''):'<p class="mu" style="font-size:13px">Bạn chưa nạp lần nào.</p>'}</div>
+<div class="card"><h3>🏆 Top nạp nhiều nhất</h3>${DB.top.length?DB.top.map((r,i)=>`<div class="rk"><i>${medal[i]||i+1}</i><span>${esc(mk(r.name))}${r.id===u.uid?' <small class="bd ok">Bạn</small>':''}</span><b class="mono">${vnd(r.total||0)}</b></div>`).join(''):'<p class="mu" style="font-size:13px">Chưa có dữ liệu xếp hạng.</p>'}</div></div>`}
 
 function vOwned(){
  const u=AuthService.user();if(!u)return lock('Đăng nhập để xem file đã mua');
@@ -293,10 +314,10 @@ document.addEventListener('click',e=>{
  case'goshop':tab='shop';renderTabs();renderMain();$('#tabs').scrollIntoView({behavior:'smooth'});break;
  case'login':openModal(vLogin());break;
  case'google':doLogin();break;
- case'profile':openModal(`<h3>Hồ sơ</h3><div style="margin:12px 0"><div class="kv"><span class="mu">Tên</span><b>${esc(u.name)}</b></div><div class="kv"><span class="mu">Email</span><span>${esc(u.email)}</span></div><div class="kv"><span class="mu">Mã nạp tiền</span><b class="mono">${u.code}</b></div><div class="kv"><span class="mu">Số dư</span><b class="mono">${vnd(u.balance)}</b></div></div><div class="row"><button class="dg" data-act="logout">Đăng xuất</button><button data-act="close">Đóng</button></div>`);break;
+ case'profile':case'me':if(!u){openModal(vLogin());break}tab='me';renderTabs();renderMain();window.scrollTo({top:0,behavior:'smooth'});break;
  case'logout':AuthService.logout();closeModal();renderAll();toast('Đã đăng xuất','ok');break;
  case'theme':DB.theme=DB.theme==='dark'?'light':'dark';Store.save();applyTheme();renderUser(false);break;
- case'reset':q='';cat='';$('#q').value='';$('#cat').value='';renderMain();break;
+ case'reset':q='';cat='';$('#cat').value='';renderMain();break;
  case'topup':openTopup();break;
  case'amt':if(topup){topup.amt=+d.a;$('#amt').value=d.a;drawQR()}break;
  case'cp':copy(d.v);break;
@@ -315,6 +336,7 @@ document.addEventListener('click',e=>{
    const ud=r.docs[0];
    pend=()=>{const at=Date.now(),b=writeBatch(fs),bal=ud.data().balance||0;
     b.update(ud.ref,{balance:increment(amt)});
+    if(!ADMIN_EMAILS.includes((ud.data().email||'').toLowerCase()))b.set(doc(fs,'board',ud.id),{name:String(ud.data().name||'').slice(0,40),total:increment(amt)},{merge:true});
     b.set(doc(ud.ref,'tx','GD'+at.toString(36).toUpperCase()),{type:'nap',amt,note:'Admin nạp · '+code,at,after:bal+amt});
     b.commit().then(()=>{toast('Đã cộng '+vnd(amt)+' cho '+(ud.data().name||code),'ok');const c=$('#mcode'),m=$('#mamt');if(c)c.value='';if(m)m.value=''}).catch(er=>toast('Lỗi cộng tiền: '+(er.code||er.message),'er'))};
    openModal(`<h3>Xác nhận cộng tiền</h3><div style="margin:12px 0"><div class="kv"><span class="mu">Khách</span><b>${esc(ud.data().name)}</b></div><div class="kv"><span class="mu">Email</span><span>${esc(ud.data().email)}</span></div><div class="kv"><span class="mu">Mã nạp</span><b class="mono">${esc(code)}</b></div><div class="kv"><span class="mu">Số tiền cộng</span><b class="mono" style="color:var(--ok)">+${vnd(amt)}</b></div></div><div class="row"><button class="p" data-act="yes">✅ Cộng tiền</button><button data-act="close">Hủy</button></div>`)
@@ -338,7 +360,6 @@ document.addEventListener('click',e=>{
  case'cat':cat=cat===d.c?'':d.c;$('#cat').value=cat;tab='shop';renderTabs();renderMain();renderCats();$('#tabs').scrollIntoView({behavior:'smooth'});break;
  case'top':window.scrollTo({top:0,behavior:'smooth'});break;
  case'home':tab='shop';cat='';$('#cat').value='';renderTabs();renderMain();renderCats();window.scrollTo({top:0,behavior:'smooth'});break;
- case'me':u?document.querySelector('[data-act=profile]')?.click():openModal(vLogin());break;
  case'close':closeModal();break;
  }});
 document.addEventListener('input',e=>{
