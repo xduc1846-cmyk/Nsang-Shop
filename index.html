@@ -286,6 +286,32 @@ function openTopup(a){
 
 async function doLogin(){try{await AuthService.login();closeModal();toast('Đăng nhập thành công','ok')}catch(er){toast(er.code==='auth/popup-closed-by-user'?'Bạn đã đóng cửa sổ đăng nhập':'Lỗi đăng nhập: '+(er.code||er.message),'er')}}
 
+/* ===== Pháo hoa khi mua thành công (nổ tại nút Thanh toán) ===== */
+function fireworks(x,y){
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const c=document.createElement('canvas'),g=c.getContext('2d'),dpr=Math.min(devicePixelRatio||1,2),W=innerWidth,H=innerHeight;
+ c.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999';
+ c.width=W*dpr;c.height=H*dpr;g.scale(dpr,dpr);document.body.append(c);
+ const GOLD=['#FFD700','#FFE9A8','#F5C26B','#FFF4D6'],ACC=['#FFFFFF','#FF9EC4','#C9A7FF','#8FE3FF'];
+ let P=[],pend=3,t=0,flash=1;const t0=performance.now();
+ const burst=(bx,by,n,pw)=>{const acc=ACC[Math.random()*ACC.length|0];
+  for(let i=0;i<n;i++){const a=Math.PI*2*i/n+Math.random()*.15,s=pw*(.4+Math.random()*.6);
+   P.push({x:bx,y:by,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1,dc:.007+Math.random()*.01,col:Math.random()<.78?GOLD[Math.random()*GOLD.length|0]:acc,sz:1+Math.random()*1.7,tw:Math.random()*6})}};
+ burst(x,y,170,8);
+ setTimeout(()=>{burst(Math.max(30,x-80-Math.random()*60),Math.max(40,y-70-Math.random()*60),80,5.5);pend--},220);
+ setTimeout(()=>{burst(Math.min(W-30,x+80+Math.random()*60),Math.max(40,y-90-Math.random()*60),80,5.5);pend--},430);
+ setTimeout(()=>{burst(x,Math.max(40,y-130-Math.random()*50),110,6.5);pend--},650);
+ const stop=()=>c.remove();
+ (function f(){t++;
+  g.globalCompositeOperation='destination-out';g.fillStyle='rgba(0,0,0,.2)';g.fillRect(0,0,W,H);
+  g.globalCompositeOperation='lighter';
+  if(flash>.02){const r=g.createRadialGradient(x,y,0,x,y,120);r.addColorStop(0,`rgba(255,235,170,${flash*.6})`);r.addColorStop(1,'rgba(255,235,170,0)');g.fillStyle=r;g.fillRect(x-120,y-120,240,240);flash*=.85}
+  P=P.filter(p=>{p.vx*=.985;p.vy=p.vy*.985+.05;p.x+=p.vx;p.y+=p.vy;p.l-=p.dc;if(p.l<=0)return false;
+   g.globalAlpha=Math.max(0,p.l)*(.65+.35*Math.sin(p.tw+t*.4));g.fillStyle=p.col;g.beginPath();g.arc(p.x,p.y,p.sz*(.5+p.l*.5),0,6.2832);g.fill();return true});
+  g.globalAlpha=1;
+  if((P.length||pend>0)&&performance.now()-t0<7000)requestAnimationFrame(f);else stop()})();
+}
+
 function buy(id){
  const u=AuthService.user();if(!u)return needLogin();
  const f=FileService.get(id);if(!f)return toast('File không còn tồn tại','er');
@@ -343,8 +369,8 @@ document.addEventListener('click',e=>{
   }).catch(er=>toast(er.message||('Lỗi: '+er.code),'er'))}break;
  case'buy':buy(d.id);break;
  case'buyok':{
-  const f=FileService.get(d.id);if(!u||!f){closeModal();toast('Không thể hoàn tất giao dịch','er');break}
-  WalletService.buy(u,f).then(()=>{closeModal();tab='owned';renderTabs();renderMain();toast('Mua thành công — link tải đã được mở khóa','ok')}).catch(er=>{closeModal();toast(er.message||er.code,'er')})}break;
+  const f=FileService.get(d.id),br=b.getBoundingClientRect(),fx=br.left+br.width/2,fy=br.top+br.height/2;if(!u||!f){closeModal();toast('Không thể hoàn tất giao dịch','er');break}
+  WalletService.buy(u,f).then(()=>{closeModal();tab='owned';renderTabs();renderMain();toast('Mua thành công — link tải đã được mở khóa','ok');fireworks(fx,fy)}).catch(er=>{closeModal();toast(er.message||er.code,'er')})}break;
  case'edit':if(!isAdmin())break;editId=d.id;renderMain();$('#af').scrollIntoView({behavior:'smooth',block:'center'});break;
  case'cancel':editId=null;renderMain();break;
  case'price':{
