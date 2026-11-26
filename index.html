@@ -98,12 +98,12 @@ const safeUrl=s=>{try{const u=new URL(s);return /^https?:$/.test(u.protocol)?u.h
 
 /* ===== Firebase: đăng nhập Google + Firestore ===== */
 const V='https://www.gstatic.com/firebasejs/10.12.2/';
-let FBOK=false,FBERR='',initializeApp,getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged,getFirestore,doc,getDoc,setDoc,deleteDoc,addDoc,collection,onSnapshot,query,where,orderBy,writeBatch,increment,auth,fs;
+let FBOK=false,FBERR='',initializeApp,getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged,getFirestore,doc,getDoc,getDocs,setDoc,deleteDoc,addDoc,collection,onSnapshot,query,where,orderBy,writeBatch,increment,auth,fs;
 try{
  if(/^DAN_/.test(FB.apiKey))throw new Error('Chưa dán cấu hình Firebase vào index.html (dòng const FB=...)');
  const [A,B,C]=await Promise.all([import(V+'firebase-app.js'),import(V+'firebase-auth.js'),import(V+'firebase-firestore.js')]);
  ({initializeApp}=A);({getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged}=B);
- ({getFirestore,doc,getDoc,setDoc,deleteDoc,addDoc,collection,onSnapshot,query,where,orderBy,writeBatch,increment}=C);
+ ({getFirestore,doc,getDoc,getDocs,setDoc,deleteDoc,addDoc,collection,onSnapshot,query,where,orderBy,writeBatch,increment}=C);
  const app=initializeApp(FB);auth=getAuth(app);fs=getFirestore(app);FBOK=true;
 }catch(e){FBERR=e.message||String(e)}
 const Store={save(){try{localStorage.setItem('ns1f:theme',DB.theme)}catch(e){}}};
@@ -127,7 +127,7 @@ const WalletService={
   b.set(doc(fs,'users',u.uid,'tx','GD'+at.toString(36).toUpperCase()),{type:'mua',amt:-f.price,note:f.name,at,after:u.balance-f.price});
   await b.commit()}
 };
-const refresh=()=>{renderUser(false);renderTabs();if(!(tab==='admin'&&document.activeElement?.closest?.('#af,#bk')))renderMain();renderStats()};
+const refresh=()=>{renderUser(false);renderTabs();if(!(tab==='admin'&&document.activeElement?.closest?.('#af,#bk,#mc')))renderMain();renderStats()};
 let unsubs=[];
 if(FBOK)onSnapshot(collection(fs,'files'),s=>{DB.files=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at||0)-(a.at||0));refresh()},er=>toast('Không tải được kho file: '+er.code,'er'));
 if(FBOK)onAuthStateChanged(auth,async fu=>{
@@ -199,7 +199,7 @@ function vHist(){
  if(!u.tx.length)return '<div class="li" style="display:block;text-align:center">Chưa có giao dịch nào.</div>';
  return u.tx.map(t=>`<div class="li"><span class="bd ${t.type==='nap'?'ok':''}">${t.type==='nap'?'Nạp tiền':'Mua file'}</span><div style="flex:1 1 200px"><b>${esc(t.note)}</b><br><small class="mu mono">${t.id} · ${dt(t.at)}</small></div><div style="text-align:right"><b class="mono" style="color:${t.amt>0?'var(--ok)':'var(--tx)'}">${t.amt>0?'+':''}${vnd(t.amt)}</b><br><small class="mu mono">Dư ${vnd(t.after)}</small></div></div>`).join('')}
 
-const vPend=()=>`<h3 style="margin-bottom:10px">Yêu cầu nạp tiền chờ duyệt (${DB.pending.length})</h3>`+(DB.pending.length?DB.pending.map(t=>`<div class="li"><span class="bd">${esc(t.code)}</span><div style="flex:1 1 180px"><b>${esc(t.name)}</b><br><small class="mu mono">NAP ${esc(t.code)} · ${dt(t.at)}</small></div><b class="mono">${vnd(t.amount)}</b><button class="sm p" data-act="approve" data-id="${t.id}">Duyệt</button><button class="sm dg" data-act="reject" data-id="${t.id}">Từ chối</button></div>`).join(''):'<div class="li mu">Không có yêu cầu nào.</div>')+'<div style="height:14px"></div>';
+const vPend=()=>`<div id="mc" class="li" style="display:block;margin-bottom:14px"><h3 style="margin-bottom:6px">Cộng tiền cho khách</h3><p class="mu" style="font-size:13px;margin-bottom:10px">Khi nhận được tiền, nhập <b>mã trong nội dung chuyển khoản</b> (VD: NAP NSNISPYR → nhập NSNISPYR) và số tiền để cộng vào ví khách.</p><input id="mcode" placeholder="Mã nạp tiền, VD: NSNISPYR" autocapitalize="characters" style="width:100%;margin-bottom:8px"><input id="mamt" type="number" min="1000" step="1000" placeholder="Số tiền (VNĐ)" style="width:100%;margin-bottom:8px"><div class="row" style="margin-bottom:10px">${[20000,50000,100000,200000,500000].map(a=>`<button class="sm" data-act="mpick" data-a="${a}">${vnd(a)}</button>`).join('')}</div><button class="p" data-act="mcredit" style="width:100%">➕ Cộng tiền vào ví</button></div>`;
 function vAdmin(){
  const u=AuthService.user();
  if(!u)return lock('Đăng nhập tài khoản quản trị để quản lý kho file');
@@ -286,13 +286,18 @@ document.addEventListener('click',e=>{
   const items=raw.split(/\n-{3,}\s*(?:\n|$)/).map(b=>b.split('\n').map(x=>x.trim()).filter(Boolean)).filter(l=>l.length>1).map(l=>{const [c,n,p]=l[0].split('|').map(x=>x.trim()),cat=/android/i.test(c)?'File Android':'File iOS';return{name:n,price:Number(p),cat,link:l.slice(1).join('\n'),meta:'Link MediaFire',desc:'Gói Aimlock cho '+(cat==='File iOS'?'iOS':'Android')+'. Link tải hiện ngay sau khi mua.',icon:ICONS[cat]}});
   if(!items.length||items.some(i=>!i.name||!(i.price>=1000)))return toast('Sai định dạng: mỗi mục cần dòng "iOS | Tên | Giá"','er');
   (async()=>{for(const i of items)await FileService.save(i);toast('Đã nhập '+items.length+' file','ok')})()}break;
- case'approve':{if(!isAdmin())break;const p=DB.pending.find(x=>x.id===d.id);if(!p)break;
-  getDoc(doc(fs,'users',p.uid)).then(s=>{const at=Date.now(),b=writeBatch(fs);
-   b.update(doc(fs,'topups',p.id),{status:'done',doneAt:at});
-   b.update(doc(fs,'users',p.uid),{balance:increment(p.amount)});
-   b.set(doc(fs,'users',p.uid,'tx','GD'+at.toString(36).toUpperCase()),{type:'nap',amt:p.amount,note:'Nạp qua QR · '+p.code,at,after:(s.data()?.balance||0)+p.amount});
-   return b.commit()}).then(()=>toast('Đã cộng '+vnd(p.amount)+' cho '+p.code,'ok')).catch(er=>toast('Lỗi duyệt: '+er.code,'er'))}break;
- case'reject':if(isAdmin())setDoc(doc(fs,'topups',d.id),{status:'rejected'},{merge:true}).catch(er=>toast(er.code,'er'));break;
+ case'mpick':{const e=$('#mamt');if(e)e.value=d.a}break;
+ case'mcredit':{if(!isAdmin())break;
+  const code=($('#mcode')?.value||'').toUpperCase().replace(/^NAP\s*/,'').replace(/\s+/g,''),amt=Math.round(Number($('#mamt')?.value));
+  if(!/^NS[A-Z0-9]{6}$/.test(code))return toast('Mã nạp tiền không đúng (dạng NSxxxxxx)','er');
+  if(!Number.isFinite(amt)||amt<1000)return toast('Số tiền tối thiểu 1.000đ','er');
+  getDocs(query(collection(fs,'users'),where('code','==',code))).then(r=>{
+   if(r.empty)throw {message:'Không tìm thấy tài khoản mã '+code};
+   const ud=r.docs[0],at=Date.now(),b=writeBatch(fs),bal=ud.data().balance||0;
+   b.update(ud.ref,{balance:increment(amt)});
+   b.set(doc(ud.ref,'tx','GD'+at.toString(36).toUpperCase()),{type:'nap',amt,note:'Admin nạp · '+code,at,after:bal+amt});
+   return b.commit().then(()=>{toast('Đã cộng '+vnd(amt)+' cho '+(ud.data().name||code),'ok');$('#mcode').value='';$('#mamt').value=''})
+  }).catch(er=>toast(er.message||('Lỗi: '+er.code),'er'))}break;
  case'buy':buy(d.id);break;
  case'buyok':{
   const f=FileService.get(d.id);if(!u||!f){closeModal();toast('Không thể hoàn tất giao dịch','er');break}
