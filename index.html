@@ -293,6 +293,7 @@ document.addEventListener('click',e=>{
   if(!Number.isFinite(amt)||amt<1000)return toast('Số tiền tối thiểu 1.000đ','er');
   getDocs(query(collection(fs,'users'),where('code','==',code))).then(r=>{
    if(r.empty)throw {message:'Không tìm thấy tài khoản mã '+code};
+   if(r.size>1)throw {message:'Mã '+code+' bị trùng nhiều tài khoản — không cộng, hãy kiểm tra thủ công'};
    const ud=r.docs[0],at=Date.now(),b=writeBatch(fs),bal=ud.data().balance||0;
    b.update(ud.ref,{balance:increment(amt)});
    b.set(doc(ud.ref,'tx','GD'+at.toString(36).toUpperCase()),{type:'nap',amt,note:'Admin nạp · '+code,at,after:bal+amt});
