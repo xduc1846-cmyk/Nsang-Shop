@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ĐỔI thành email Google của admin (viết thường)
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email == 'xduc1846@gmail.com'
+        && request.auth.token.email_verified == true;
+    }
+    function isMe(uid) { return request.auth != null && request.auth.uid == uid; }
+
+    // Thông tin file (công khai). Chỉ admin được sửa.
+    match /files/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Link tải: chỉ admin hoặc người đã mua mới đọc được.
+    match /secrets/{id} {
+      allow read: if isAdmin() || (request.auth != null
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid)/owned/$(id)));
+      allow write: if isAdmin();
+    }
+
+    match /users/{uid} {
+      allow read: if isMe(uid) || isAdmin();
+      // Tự tạo tài khoản: số dư bắt buộc = 0
+      allow create: if isMe(uid) && request.resource.data.balance == 0
+        && request.resource.data.keys().hasOnly(['name','email','code','balance','at']);
+      // Người dùng chỉ được TRỪ tiền đúng bằng giá file, kèm tạo "owned" cùng lúc
+      allow update: if isAdmin() || (isMe(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['balance','last'])
+        && request.resource.data.balance >= 0
+        && request.resource.data.balance == resource.data.balance
+             - get(/databases/$(database)/documents/files/$(request.resource.data.last)).data.price
+        && !exists(/databases/$(database)/documents/users/$(uid)/owned/$(request.resource.data.last))
+        && existsAfter(/databases/$(database)/documents/users/$(uid)/owned/$(request.resource.data.last)));
+
+      match /owned/{fid} {
+        allow read: if isMe(uid) || isAdmin();
+        allow create: if isMe(uid)
+          && getAfter(/databases/$(database)/documents/users/$(uid)).data.last == fid
+          && getAfter(/databases/$(database)/documents/users/$(uid)).data.balance
+             == get(/databases/$(database)/documents/users/$(uid)).data.balance
+                - get(/databases/$(database)/documents/files/$(fid)).data.price;
+      }
+      match /tx/{tid} {
+        allow read: if isMe(uid) || isAdmin();
+        allow create: if isAdmin() || (isMe(uid) && request.resource.data.type == 'mua');
+      }
+    }
+
+    // Yêu cầu nạp tiền: user gửi, admin duyệt
+    match /topups/{id} {
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'pending';
+      allow read: if isAdmin() || (request.auth != null && resource.data.uid == request.auth.uid);
+      allow update: if isAdmin() && resource.data.status == 'pending';
+    }
+  }
+}
