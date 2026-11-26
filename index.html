@@ -74,14 +74,13 @@ footer{border-top:1px solid var(--bd);margin-top:50px;padding:24px 0;color:var(-
 <body>
 <header><div class="w hd">
 <div class="logo">Nsang<b>No1File</b>.vn</div>
-<div class="search"><input id="q" type="search" placeholder="🔍 Tìm file, tài liệu, source code…" aria-label="Tìm kiếm file" autocomplete="off"></div>
 <select id="cat" aria-label="Lọc danh mục"></select>
 <div id="ub"></div>
 </div></header>
 <main class="w">
 <section class="hero">
-<h1>Mua file số <span>tức thì</span>,<br>nạp ví bằng QR</h1>
-<p>Source code, template thiết kế, tài liệu và công cụ chọn lọc. Đăng nhập Google, nạp tiền bằng mã QR riêng của tài khoản, mua xong nhận link tải ngay.</p>
+<h1>Hệ Thống Bán File<br><span>Vĩnh Viễn Uy Tín</span></h1>
+<p>Cung cấp File Aimlock-Nhẹ Tâm Tác Dụng Cao Hỗ Trợ Anh Em Cải Thiện Kĩ Năng Kéo Tâm, Tăng Tỉ Lệ Headshot</p>
 <button class="p" data-act="goshop">Khám phá kho file →</button>
 <div class="st" id="st"></div>
 </section>
@@ -193,7 +192,7 @@ function renderUser(anim){
  if(u&&anim)countUp(u.balance)}
 const renderTabs=()=>{if(tab==='admin'&&!isAdmin())tab='shop';$('#tabs').innerHTML=[['shop','🛍️ Kho File'],['owned','📥 File Đã Mua'],['hist','🧾 Lịch Sử Giao Dịch'],...(isAdmin()?[['admin','⚙️ Quản Trị · Nạp tiền']]:[])].map(([k,t])=>`<button class="${k===tab?'on':''}" data-act="tab" data-t="${k}">${t}</button>`).join('')};
 const renderCats=()=>{$('#cats').innerHTML=CATS.map(c=>{const n=DB.files.filter(f=>f.cat===c).length;return `<button class="card cc ${cat===c?'on':''}" data-act="cat" data-c="${c}"><span class="ic">${ICONS[c]}</span><span><b style="font-size:17px">${c}</b><br><small>${n} gói · bấm để xem bảng giá</small></span></button>`}).join('')};
-const renderStats=()=>{renderCats();$('#st').innerHTML=`<div><b class="mono">${DB.files.length}</b><small>file sẵn sàng</small></div><div><b>🔐 Google</b><small>đăng nhập an toàn</small></div><div><b>🔒 Bảo mật</b><small>link chỉ mở khi đã mua</small></div>`};
+const renderStats=()=>{renderCats();$('#st').innerHTML=`<div><b>🛡️ Bảo hành uy tín</b></div>`};
 const renderMain=()=>{$('#main').innerHTML=({shop:vShop,owned:vOwned,hist:vHist,admin:vAdmin})[tab]()};
 const renderAll=()=>{renderUser(false);renderTabs();renderMain();renderStats()};
 
@@ -296,7 +295,7 @@ document.addEventListener('click',e=>{
  case'profile':openModal(`<h3>Hồ sơ</h3><div style="margin:12px 0"><div class="kv"><span class="mu">Tên</span><b>${esc(u.name)}</b></div><div class="kv"><span class="mu">Email</span><span>${esc(u.email)}</span></div><div class="kv"><span class="mu">Mã nạp tiền</span><b class="mono">${u.code}</b></div><div class="kv"><span class="mu">Số dư</span><b class="mono">${vnd(u.balance)}</b></div></div><div class="row"><button class="dg" data-act="logout">Đăng xuất</button><button data-act="close">Đóng</button></div>`);break;
  case'logout':AuthService.logout();closeModal();renderAll();toast('Đã đăng xuất','ok');break;
  case'theme':DB.theme=DB.theme==='dark'?'light':'dark';Store.save();applyTheme();renderUser(false);break;
- case'reset':q='';cat='';$('#q').value='';$('#cat').value='';renderMain();break;
+ case'reset':q='';cat='';$('#cat').value='';renderMain();break;
  case'topup':openTopup();break;
  case'amt':if(topup){topup.amt=+d.a;$('#amt').value=d.a;drawQR()}break;
  case'cp':copy(d.v);break;
