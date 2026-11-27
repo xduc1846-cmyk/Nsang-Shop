@@ -8,7 +8,7 @@ exports.sepayWebhook = onRequest({region: 'asia-southeast1', secrets: ['SEPAY_KE
   if (req.get('Authorization') !== 'Apikey ' + process.env.SEPAY_KEY) return res.status(401).json({success: false});
   const d = req.body || {};
   if (d.transferType !== 'in') return res.json({success: true});
-  const m = String(d.content || '').toUpperCase().match(/NAP\s*(NS[A-Z0-9]{6})/);
+  const m = String(d.content || '').toUpperCase().match(/NAP\s*(\d{6}|NS[A-Z0-9]{6})/);
   const amount = Number(d.transferAmount);
   if (!m || !(amount > 0)) return res.json({success: true});
   const txId = 'SP' + d.id; // chống cộng trùng khi SePay gửi lại

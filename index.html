@@ -127,6 +127,7 @@ button:active,.bt:active{transform:scale(.94)}
 @keyframes bring{from{transform:scale(.3);opacity:.95}to{transform:scale(3.6);opacity:0}}
 @media(prefers-reduced-motion:reduce){.rv{opacity:1;translate:none}}
 </style>
+<style id="fall-css">#fall{padding:9px 12px;line-height:1}#fallc{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:26}</style>
 </head>
 <body>
 <header><div class="w hd">
@@ -134,6 +135,7 @@ button:active,.bt:active{transform:scale(.94)}
 <select id="cat" aria-label="Lọc danh mục"></select>
 <div id="ub"></div>
 <button id="snd" aria-label="Bật/tắt âm thanh bong bóng" title="Âm thanh bong bóng">🔊</button>
+<button id="fall" aria-label="Bật/tắt hiệu ứng tuyết và hoa anh đào">🌸</button>
 </div></header>
 <main class="w">
 <section class="hero">
@@ -209,7 +211,17 @@ if(FBOK)onAuthStateChanged(auth,async fu=>{
  if(!fu){refresh();return}
  try{
   const ref=doc(fs,'users',fu.uid),email=(fu.email||'').toLowerCase();
-  if(!(await getDoc(ref)).exists())await setDoc(ref,{name:(fu.displayName||email.split('@')[0]).slice(0,40),email,code:'NS'+fu.uid.slice(0,6).toUpperCase(),balance:0,at:Date.now()});
+  if(!(await getDoc(ref)).exists()){
+    // mã nạp tiền 6 chữ số, duy nhất: giữ chỗ trong codes/{mã}, trùng thì thử số khác
+    let made=false,lastEr;
+    for(let k=0;k<10&&!made;k++){
+     const code=String(100000+Math.floor(Math.random()*900000)),b=writeBatch(fs);
+     b.set(doc(fs,'codes',code),{uid:fu.uid});
+     b.set(ref,{name:(fu.displayName||email.split('@')[0]).slice(0,40),email,code,balance:0,at:Date.now()});
+     try{await b.commit();made=true}catch(er){lastEr=er}
+    }
+    if(!made)throw lastEr;
+   }
   DB.me={uid:fu.uid,name:fu.displayName||email,email,code:'',balance:0,owned:[],tx:[],admin:ADMIN_EMAILS.includes(email)&&fu.emailVerified};
   let firstSnap=true;unsubs.push(onSnapshot(ref,s=>{if(DB.me&&s.exists()){const old=DB.me.balance||0,nb=s.data().balance||0;Object.assign(DB.me,s.data());if(!firstSnap&&nb>old){toast('✅ Đã nạp +'+vnd(nb-old)+' vào ví','ok');if(topup)closeModal()}firstSnap=false;refresh()}}));
   unsubs.push(onSnapshot(collection(ref,'owned'),s=>{
@@ -286,7 +298,7 @@ function vHist(){
  if(!u.tx.length)return '<div class="li" style="display:block;text-align:center">Chưa có giao dịch nào.</div>';
  return u.tx.map(t=>`<div class="li"><span class="bd ${t.type==='nap'?'ok':''}">${t.type==='nap'?'Nạp tiền':'Mua file'}</span><div style="flex:1 1 200px"><b>${esc(t.note)}</b><br><small class="mu mono">${t.id} · ${dt(t.at)}</small></div><div style="text-align:right"><b class="mono" style="color:${t.amt>0?'var(--ok)':'var(--tx)'}">${t.amt>0?'+':''}${vnd(t.amt)}</b><br><small class="mu mono">Dư ${vnd(t.after)}</small></div></div>`).join('')}
 
-const vPend=()=>`<div id="mc" class="li" style="display:block;margin-bottom:14px"><h3 style="margin-bottom:6px">Cộng tiền cho khách</h3><p class="mu" style="font-size:13px;margin-bottom:10px">Khi nhận được tiền, nhập <b>mã trong nội dung chuyển khoản</b> (VD: NAP NSNISPYR → nhập NSNISPYR) và số tiền để cộng vào ví khách.</p><input id="mcode" placeholder="Mã nạp tiền, VD: NSNISPYR" autocapitalize="characters" style="width:100%;margin-bottom:8px"><input id="mamt" type="number" min="1000" step="1000" placeholder="Số tiền (VNĐ)" style="width:100%;margin-bottom:8px"><div class="row" style="margin-bottom:10px">${[20000,50000,100000,200000,500000].map(a=>`<button class="sm" data-act="mpick" data-a="${a}">${vnd(a)}</button>`).join('')}</div><button class="p" data-act="mcredit" style="width:100%">➕ Cộng tiền vào ví</button></div>`;
+const vPend=()=>`<div id="mc" class="li" style="display:block;margin-bottom:14px"><h3 style="margin-bottom:6px">Cộng tiền cho khách</h3><p class="mu" style="font-size:13px;margin-bottom:10px">Khi nhận được tiền, nhập <b>mã trong nội dung chuyển khoản</b> (VD: NAP 482915 → nhập 482915) và số tiền để cộng vào ví khách.</p><input id="mcode" placeholder="Mã nạp tiền, VD: 482915" inputmode="numeric" autocapitalize="characters" style="width:100%;margin-bottom:8px"><input id="mamt" type="number" min="1000" step="1000" placeholder="Số tiền (VNĐ)" style="width:100%;margin-bottom:8px"><div class="row" style="margin-bottom:10px">${[20000,50000,100000,200000,500000].map(a=>`<button class="sm" data-act="mpick" data-a="${a}">${vnd(a)}</button>`).join('')}</div><button class="p" data-act="mcredit" style="width:100%">➕ Cộng tiền vào ví</button></div>`;
 function vAdmin(){
  const u=AuthService.user();
  if(!u)return lock('Đăng nhập tài khoản quản trị để quản lý kho file');
@@ -402,7 +414,7 @@ document.addEventListener('click',e=>{
  case'mpick':{const e=$('#mamt');if(e)e.value=d.a}break;
  case'mcredit':{if(!isAdmin())break;
   const code=($('#mcode')?.value||'').toUpperCase().replace(/^NAP\s*/,'').replace(/\s+/g,''),amt=Math.round(Number($('#mamt')?.value));
-  if(!/^NS[A-Z0-9]{6}$/.test(code))return toast('Mã nạp tiền không đúng (dạng NSxxxxxx)','er');
+  if(!/^(\d{6}|NS[A-Z0-9]{6})$/.test(code))return toast('Mã nạp tiền không đúng (6 chữ số, hoặc dạng NSxxxxxx của khách cũ)','er');
   if(!Number.isFinite(amt)||amt<1000)return toast('Số tiền tối thiểu 1.000đ','er');
   getDocs(query(collection(fs,'users'),where('code','==',code))).then(r=>{
    if(r.empty)throw {message:'Không tìm thấy tài khoản mã '+code};
@@ -646,6 +658,79 @@ function onScroll(){
 }
 addEventListener('scroll',()=>{if(!tick){tick=true;requestAnimationFrame(onScroll)}},{passive:true});
 onScroll();
+})();
+</script>
+
+<script id="fall-js">
+(()=>{
+'use strict';
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){const b=document.getElementById('fall');if(b)b.remove();return}
+const btn=document.getElementById('fall');
+let on=true;try{on=localStorage.getItem('ns1f:fall')!=='0'}catch(e){}
+const cv=document.createElement('canvas');cv.id='fallc';cv.setAttribute('aria-hidden','true');document.body.append(cv);
+const g=cv.getContext('2d');
+let W=0,H=0,dpr=1,P=[],raf=0,last=0,T=0;
+const PINK=['#FFC1D6','#FFB3CB','#FFD6E4','#F9A8C9','#FFE0EB'];
+const rnd=(a,b)=>a+Math.random()*(b-a);
+function mk(kind,init){
+ const snow=kind==='s';
+ return{k:kind,x:rnd(-40,W+40),y:init?rnd(-H*.1,H):rnd(-60,-10),
+  r:snow?rnd(1.3,4.2):rnd(5,10),
+  vy:snow?rnd(28,70):rnd(34,62),
+  sw:rnd(.6,1.8),ph:rnd(0,6.28),amp:snow?rnd(10,30):rnd(24,60),
+  rot:rnd(0,6.28),vr:rnd(-1.6,1.6),fl:rnd(0,6.28),vf:rnd(1.5,3.5),
+  a:snow?rnd(.45,.95):rnd(.7,.95),col:PINK[Math.random()*PINK.length|0]};
+}
+function fill(){
+ const ns=Math.round(Math.min(130,Math.max(35,W/12))),np=Math.round(Math.min(34,Math.max(10,W/44)));
+ P=[];for(let i=0;i<ns;i++)P.push(mk('s',true));for(let i=0;i<np;i++)P.push(mk('p',true));
+}
+function size(){
+ dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;
+ cv.width=W*dpr;cv.height=H*dpr;g.setTransform(dpr,0,0,dpr,0,0);
+ if(!P.length)fill();
+}
+function petal(r){
+ g.beginPath();g.moveTo(0,-r*.55);
+ g.bezierCurveTo(r*.45,-r*1.1,r*1.05,-r*.35,r*.7,r*.5);
+ g.bezierCurveTo(r*.5,r*.9,r*.15,r*1.05,0,r);
+ g.bezierCurveTo(-r*.15,r*1.05,-r*.5,r*.9,-r*.7,r*.5);
+ g.bezierCurveTo(-r*1.05,-r*.35,-r*.45,-r*1.1,0,-r*.55);g.closePath();
+}
+function frame(t){
+ raf=requestAnimationFrame(frame);
+ const dt=Math.min(.05,(t-last)/1000||.016);last=t;T+=dt;
+ const light=document.documentElement.dataset.theme==='light';
+ const wind=Math.sin(T*.35)*22+Math.sin(T*.9)*8+14; // gió nhẹ thổi lệch phải
+ g.clearRect(0,0,W,H);
+ for(let i=0;i<P.length;i++){
+  const p=P[i];
+  p.y+=p.vy*dt;p.ph+=p.sw*dt;
+  p.x+=(Math.sin(p.ph)*p.amp*.6+wind*(p.k==='p'?1.25:.8))*dt;
+  p.rot+=p.vr*dt;p.fl+=p.vf*dt;
+  if(p.y>H+20||p.x>W+60||p.x<-80){P[i]=mk(p.k,false);P[i].x=rnd(-60,W+20);continue}
+  g.save();g.translate(p.x,p.y);
+  if(p.k==='s'){
+   const R=p.r*2.4,gr=g.createRadialGradient(0,0,0,0,0,R);
+   if(light){gr.addColorStop(0,`rgba(150,195,245,${p.a})`);gr.addColorStop(.5,`rgba(170,205,248,${p.a*.5})`);gr.addColorStop(1,'rgba(170,205,248,0)')}
+   else{gr.addColorStop(0,`rgba(255,255,255,${p.a})`);gr.addColorStop(.45,`rgba(235,245,255,${p.a*.55})`);gr.addColorStop(1,'rgba(235,245,255,0)')}
+   g.fillStyle=gr;g.beginPath();g.arc(0,0,R,0,6.2832);g.fill();
+  }else{
+   g.rotate(p.rot);g.scale(1,.35+.65*Math.abs(Math.cos(p.fl))); // lật cánh như xoay trong không khí
+   g.globalAlpha=p.a;g.fillStyle=p.col;petal(p.r);g.fill();
+   g.globalAlpha=p.a*.55;g.strokeStyle='#F48FB1';g.lineWidth=.6;g.stroke();
+  }
+  g.restore();
+ }
+ g.globalAlpha=1;
+}
+function start(){if(!raf){last=performance.now();raf=requestAnimationFrame(frame)}}
+function stop(){cancelAnimationFrame(raf);raf=0;g.clearRect(0,0,W,H)}
+function paint(){if(btn){btn.textContent=on?'🌸':'🚫';btn.setAttribute('aria-pressed',String(on));btn.title=on?'Tắt tuyết & hoa anh đào':'Bật tuyết & hoa anh đào'}cv.style.display=on?'':'none'}
+size();paint();if(on)start();
+addEventListener('resize',()=>{size();fill()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();else if(on)start()});
+if(btn)btn.addEventListener('click',()=>{on=!on;try{localStorage.setItem('ns1f:fall',on?'1':'0')}catch(e){}paint();if(on)start();else stop()});
 })();
 </script>
 </body>

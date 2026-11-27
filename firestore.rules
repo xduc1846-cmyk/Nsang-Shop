@@ -51,6 +51,15 @@ service cloud.firestore {
       }
     }
 
+    // Giữ chỗ mã nạp tiền 6 số: mỗi mã chỉ tạo được 1 lần, và phải đúng mã ghi trong hồ sơ của chính người tạo
+    match /codes/{code} {
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid
+        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.code == code;
+      allow read: if isAdmin();
+    }
+
     // Bảng xếp hạng nạp tiền: ai cũng đọc được, chỉ admin ghi (admin không được ghi cho chính mình)
     match /board/{uid} {
       allow read: if true;
