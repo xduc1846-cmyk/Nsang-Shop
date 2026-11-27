@@ -161,7 +161,7 @@ header{background:var(--gl);border-bottom:1px solid var(--bd);box-shadow:0 1px 0
  border:1px solid var(--bd);background:linear-gradient(90deg,rgba(139,92,246,.14),rgba(34,211,238,.1));margin-bottom:22px;backdrop-filter:blur(8px)}
 .eyebrow i{width:8px;height:8px;border-radius:50%;background:#34D399;box-shadow:0 0 0 0 rgba(52,211,153,.7);animation:pulse 2s infinite}
 @keyframes pulse{70%{box-shadow:0 0 0 9px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
-.hero h1{font-family:var(--hf);font-weight:900;font-size:clamp(34px,7.2vw,72px);line-height:1.06;letter-spacing:-.04em}
+.hero h1{font-family:var(--hf);font-weight:900;font-size:clamp(38px,9vw,72px);line-height:1.06;letter-spacing:-.04em}
 .hero h1 .l1,.hero h1 .l2{display:block}
 .hero h1 .l1{background:linear-gradient(180deg,#FFFFFF 25%,#A9B1D0 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-transform:none}
 [data-theme=light] .hero h1 .l1{background:linear-gradient(180deg,#12152B 30%,#4B5488);-webkit-background-clip:text;background-clip:text}
@@ -256,10 +256,11 @@ article.card{perspective:900px}
 article.card.rv{transition:opacity .85s cubic-bezier(.22,1,.36,1),translate .95s cubic-bezier(.22,1,.36,1),transform .18s ease-out,border-color .25s,box-shadow .35s}
 @media(hover:hover){article.card:hover{transform:perspective(900px) translateY(-6px) rotateX(var(--tx,0deg)) rotateY(var(--ty,0deg))}}
 .hero h1.split .l1,.hero h1.split .l2{background:none;color:inherit;animation:none;-webkit-text-fill-color:currentColor}
-.hero h1 .w{display:inline-block;opacity:0;animation:wordin 1s cubic-bezier(.22,1,.36,1) forwards;animation-delay:calc(var(--i)*.1s + .2s);padding-bottom:.06em}
-.hero h1 .l1 .w{background:linear-gradient(180deg,#fff 25%,#A9B1D0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-[data-theme=light] .hero h1 .l1 .w{background:linear-gradient(180deg,#12152B 30%,#4B5488);-webkit-background-clip:text;background-clip:text}
-.hero h1 .l2 .w{background:linear-gradient(100deg,#22D3EE,#8B5CF6,#F472B6,#FBBF24,#22D3EE);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:wordin 1s cubic-bezier(.22,1,.36,1) forwards,shift 7s linear infinite;animation-delay:calc(var(--i)*.1s + .2s),0s}
+.hero h1.split .l1,.hero h1.split .l2{display:flex;flex-wrap:wrap;justify-content:center;column-gap:.26em}
+.hero h1 .wd{display:inline-block;opacity:0;animation:wordin 1s cubic-bezier(.22,1,.36,1) forwards;animation-delay:calc(var(--i)*.1s + .2s);padding-bottom:.06em}
+.hero h1 .l1 .wd{background:linear-gradient(180deg,#fff 25%,#A9B1D0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+[data-theme=light] .hero h1 .l1 .wd{background:linear-gradient(180deg,#12152B 30%,#4B5488);-webkit-background-clip:text;background-clip:text}
+.hero h1 .l2 .wd{background:linear-gradient(100deg,#22D3EE,#8B5CF6,#F472B6,#FBBF24,#22D3EE);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:wordin 1s cubic-bezier(.22,1,.36,1) forwards,shift 7s linear infinite;animation-delay:calc(var(--i)*.1s + .2s),0s}
 @keyframes wordin{from{opacity:0;transform:translateY(.55em) rotateX(-50deg);filter:blur(10px)}to{opacity:1;transform:none;filter:blur(0)}}
 .ft{display:grid;gap:28px;grid-template-columns:1.4fr 1fr 1.2fr;text-align:left;padding-bottom:22px}
 .ft p,.fc span{display:block;margin-top:10px;line-height:1.7}
@@ -270,7 +271,7 @@ article.card.rv{transition:opacity .85s cubic-bezier(.22,1,.36,1),translate .95s
 .fcp{border-top:1px solid var(--bd);padding-top:16px;margin-top:6px}
 .li,.mb{overflow-wrap:anywhere}
 @media(max-width:720px){.fcp{padding-right:70px;text-align:left}.ft{grid-template-columns:1fr}.tbar select{flex:1 1 100%}}
-@media(prefers-reduced-motion:reduce){.hero h1 .w{animation:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.hero h1 .wd{animation:none;opacity:1}}
 </style>
 </head>
 <body data-tab="shop">
@@ -325,18 +326,18 @@ const safeUrl=s=>{try{const u=new URL(s);return /^https?:$/.test(u.protocol)?u.h
 
 /* ===== Firebase: đăng nhập Google + Firestore ===== */
 const V='https://www.gstatic.com/firebasejs/10.12.2/';
-let FBOK=false,FBERR='',initializeApp,getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged,getFirestore,doc,getDoc,getDocs,setDoc,deleteDoc,addDoc,collection,onSnapshot,query,where,orderBy,limit,writeBatch,increment,auth,fs;
+let FBOK=false,FBERR='',initializeApp,getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,signOut,onAuthStateChanged,getFirestore,doc,getDoc,getDocs,setDoc,deleteDoc,addDoc,collection,onSnapshot,query,where,orderBy,limit,writeBatch,increment,auth,fs;
 try{
  if(/^DAN_/.test(FB.apiKey))throw new Error('Chưa dán cấu hình Firebase vào index.html (dòng const FB=...)');
  const [A,B,C]=await Promise.all([import(V+'firebase-app.js'),import(V+'firebase-auth.js'),import(V+'firebase-firestore.js')]);
- ({initializeApp}=A);({getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged}=B);
+ ({initializeApp}=A);({getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,signOut,onAuthStateChanged}=B);
  ({getFirestore,doc,getDoc,getDocs,setDoc,deleteDoc,addDoc,collection,onSnapshot,query,where,orderBy,limit,writeBatch,increment}=C);
- const app=initializeApp(FB);auth=getAuth(app);fs=getFirestore(app);FBOK=true;
+ const app=initializeApp(FB);auth=getAuth(app);fs=getFirestore(app);FBOK=true;getRedirectResult(auth).catch(()=>{});
 }catch(e){FBERR=e.message||String(e)}
 const Store={save(){try{localStorage.setItem('ns1f:theme',DB.theme)}catch(e){}}};
 let DB={top:[],files:[],links:{},pending:[],me:null,theme:(()=>{try{return localStorage.getItem('ns1f:theme')||'dark'}catch(e){return'dark'}})()};
 let tab='shop',q='',cat='',sortBy='',loaded=!FBOK,editId=null,topup=null,pend=null,shown=0;
-const AuthService={login:()=>FBOK?signInWithPopup(auth,new GoogleAuthProvider()):Promise.reject(new Error(FBERR||'Firebase chưa sẵn sàng')),logout:()=>FBOK&&signOut(auth),user:()=>DB.me};
+const AuthService={login:redir=>FBOK?(p=>(p.setCustomParameters({prompt:'select_account'}),redir?signInWithRedirect(auth,p):signInWithPopup(auth,p)))(new GoogleAuthProvider()):Promise.reject(new Error(FBERR||'Firebase chưa sẵn sàng')),logout:()=>FBOK&&signOut(auth),user:()=>DB.me};
 const isAdmin=()=>!!DB.me?.admin;
 const FileService={
  get(id){return DB.files.find(f=>f.id===id)},
@@ -394,7 +395,7 @@ const vietqr=(amt,memo)=>{
  return p+crc16(p)};
 
 /* ===== Tiện ích giao diện ===== */
-function toast(m,k='ok'){const t=document.createElement('div');t.className='t';t.dataset.k=k;t.textContent=m;$('#ts').append(t);setTimeout(()=>t.remove(),3200)}
+function toast(m,k='ok'){[...$('#ts').children].forEach(x=>{if(x.textContent===m)x.remove()});const t=document.createElement('div');t.className='t';t.dataset.k=k;t.textContent=m;$('#ts').append(t);setTimeout(()=>t.remove(),m.length>60?6500:3200)}
 async function copy(t){try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.append(a);a.select();try{document.execCommand('copy')}catch(_){}a.remove()}toast('Đã sao chép','ok')}
 const openModal=h=>{$('#ov').innerHTML='<div class="mb" role="dialog" aria-modal="true">'+h+'</div>';$('#ov').classList.add('on')};
 const closeModal=()=>{$('#ov').classList.remove('on');$('#ov').innerHTML='';topup=null;pend=null};
@@ -470,7 +471,7 @@ function vAdmin(){
 <h3 style="margin:22px 0 10px">Kho file & giá bán (${DB.files.length})</h3>`
  +DB.files.map(f=>`<div class="li"><span>${f.icon}</span><b style="flex:1 1 160px">${esc(f.name)}</b><input class="pi mono" type="number" min="1000" step="1000" value="${f.price}" style="width:130px" data-id="${f.id}" aria-label="Giá bán"><button class="sm p" data-act="price" data-id="${f.id}">Lưu giá</button><button class="sm" data-act="edit" data-id="${f.id}">Sửa</button><button class="sm dg" data-act="del" data-id="${f.id}">Xóa</button></div>`).join('')}
 
-const vLogin=()=>`<h3>Đăng nhập</h3><p class="mu" style="margin:8px 0 14px">Đăng nhập bằng tài khoản Google thật. Lần đầu hệ thống tự tạo tài khoản và mã nạp tiền cho bạn.</p><button class="p" style="width:100%" data-act="google">🔐 Tiếp tục với Google</button><button data-act="close" style="width:100%;margin-top:8px">Đóng</button>`;
+const vLogin=()=>`<h3>Đăng nhập</h3><p class="mu" style="margin:8px 0 14px">Đăng nhập bằng tài khoản Google thật. Lần đầu hệ thống tự tạo tài khoản và mã nạp tiền cho bạn.</p><button class="p" style="width:100%" data-act="google">🔐 Tiếp tục với Google</button><button data-act="google2" style="width:100%;margin-top:8px">↗ Thử cách khác (chuyển trang)</button><button data-act="close" style="width:100%;margin-top:8px">Đóng</button>`;
 
 function vTopup(){
  const u=AuthService.user();
@@ -497,7 +498,20 @@ function openTopup(a){
  topup={amt:Math.min(MAX,Math.max(MIN,Math.ceil((a||50000)/1000)*1000))};
  openModal(vTopup());drawQR()}
 
-async function doLogin(){try{await AuthService.login();closeModal();toast('Đăng nhập thành công','ok')}catch(er){toast(er.code==='auth/popup-closed-by-user'?'Bạn đã đóng cửa sổ đăng nhập':'Lỗi đăng nhập: '+(er.code||er.message),'er')}}
+let logging=false;
+const loginMsg=(c,er)=>c==='auth/popup-blocked'?'Trình duyệt chặn cửa sổ đăng nhập. Hãy cho phép cửa sổ bật lên hoặc bấm "Thử cách khác".'
+ :['auth/internal-error','auth/web-storage-unsupported','auth/operation-not-supported-in-this-environment','auth/network-request-failed'].includes(c)?'Trình duyệt đang chặn đăng nhập Google. Hãy mở bằng Safari/Chrome (không dùng trình duyệt trong app), tắt chế độ riêng tư rồi bấm "Thử cách khác".'
+ :c==='auth/unauthorized-domain'?'Tên miền này chưa được cho phép trong Firebase (Authentication → Settings → Authorized domains).'
+ :'Lỗi đăng nhập: '+(c||er.message);
+async function doLogin(redir){
+ if(logging)return;logging=true;
+ const bt=[...document.querySelectorAll('#ov [data-act=google],#ov [data-act=google2]')];bt.forEach(x=>x.disabled=true);
+ const free=()=>{logging=false;bt.forEach(x=>x.disabled=false)},guard=setTimeout(free,25000);
+ try{await AuthService.login(redir);closeModal();toast('Đăng nhập thành công','ok')}
+ catch(er){const c=er.code||'';
+  if(c==='auth/popup-closed-by-user')toast('Bạn đã đóng cửa sổ đăng nhập','wa');
+  else if(c!=='auth/cancelled-popup-request')toast(loginMsg(c,er),'er')}
+ finally{clearTimeout(guard);free()}}
 
 /* ===== Pháo hoa khi mua thành công (nổ tại nút Thanh toán) ===== */
 function fireworks(x,y){
@@ -553,6 +567,7 @@ document.addEventListener('click',e=>{
  case'goshop':tab='shop';renderTabs();renderMain();$('#tabs').scrollIntoView({behavior:'smooth'});break;
  case'login':openModal(vLogin());break;
  case'google':doLogin();break;
+ case'google2':doLogin(true);break;
  case'profile':case'me':if(!u){openModal(vLogin());break}tab='me';renderTabs();renderMain();window.scrollTo({top:0,behavior:'smooth'});break;
  case'logout':AuthService.logout();closeModal();renderAll();toast('Đã đăng xuất','ok');break;
  case'theme':DB.theme=DB.theme==='dark'?'light':'dark';Store.save();applyTheme();renderUser(false);break;
@@ -905,7 +920,7 @@ const boot=document.getElementById('boot'),hide=()=>boot&&boot.classList.add('of
 addEventListener('load',()=>setTimeout(hide,450));setTimeout(hide,3500);
 /* chữ hero xuất hiện từng từ */
 const h=document.querySelector('.hero h1');
-if(h&&!RM){let i=0;h.querySelectorAll('.l1,.l2').forEach(l=>{l.innerHTML=l.textContent.trim().split(/\s+/).map(w=>`<span class="w" style="--i:${i++}">${w}</span>`).join(' ')});h.classList.add('split')}
+if(h&&!RM){let i=0;h.querySelectorAll('.l1,.l2').forEach(l=>{l.innerHTML=l.textContent.trim().split(/\s+/).map(w=>`<span class="wd" style="--i:${i++}">${w}</span>`).join('')});h.classList.add('split')}
 /* nghiêng 3D + nút nam châm */
 if(HV&&!RM){
  let raf=0,e0=null,tilted=null;
