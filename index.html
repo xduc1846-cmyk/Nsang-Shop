@@ -236,8 +236,45 @@ footer{border-top:1px solid var(--bd);background:linear-gradient(transparent,rgb
 footer b{color:var(--tx)}
 @media(prefers-reduced-motion:reduce){body::after,.hero h1 .l2,.eyebrow i,.hl::after,.card:hover::before{animation:none}}
 </style>
+<style id="lux2">
+#boot{position:fixed;inset:0;z-index:100;display:grid;place-items:center;align-content:center;gap:22px;background:var(--bg);transition:opacity .6s,visibility .6s}
+#boot.off{opacity:0;visibility:hidden}
+#boot .lg{width:62px;height:62px;font-size:30px;border-radius:18px;animation:bootp 1.3s ease-in-out infinite}
+@keyframes bootp{50%{transform:rotate(-6deg) scale(1.12);box-shadow:0 0 50px 4px rgba(124,92,255,.7)}}
+#boot .bar{width:150px;height:3px;border-radius:3px;background:var(--bd);overflow:hidden;position:relative}
+#boot .bar::after{content:'';position:absolute;inset:0;width:45%;background:var(--g);animation:sweep 1.1s ease-in-out infinite}
+.tbar{display:none;gap:10px;margin:0 0 20px;flex-wrap:wrap}
+body[data-tab=shop] .tbar{display:flex}
+.sbox{flex:1 1 260px;position:relative;display:flex;align-items:center}
+.sbox span{position:absolute;left:15px;pointer-events:none;opacity:.8}
+.sbox input{width:100%;height:48px;padding-left:44px;border-radius:14px}
+.tbar select{height:48px;border-radius:14px;flex:0 1 200px}
+.sk{height:230px;border-radius:20px;border:1px solid var(--bd);background:linear-gradient(100deg,transparent 30%,rgba(139,92,246,.14) 50%,transparent 70%) 0 0/250% 100%,var(--cd);animation:shim 1.5s linear infinite}
+@keyframes shim{to{background-position:-250% 0}}
+.bd.on{color:#34D399;border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.1)}
+article.card{perspective:900px}
+article.card.rv{transition:opacity .85s cubic-bezier(.22,1,.36,1),translate .95s cubic-bezier(.22,1,.36,1),transform .18s ease-out,border-color .25s,box-shadow .35s}
+@media(hover:hover){article.card:hover{transform:perspective(900px) translateY(-6px) rotateX(var(--tx,0deg)) rotateY(var(--ty,0deg))}}
+.hero h1.split .l1,.hero h1.split .l2{background:none;color:inherit;animation:none;-webkit-text-fill-color:currentColor}
+.hero h1 .w{display:inline-block;opacity:0;animation:wordin 1s cubic-bezier(.22,1,.36,1) forwards;animation-delay:calc(var(--i)*.1s + .2s);padding-bottom:.06em}
+.hero h1 .l1 .w{background:linear-gradient(180deg,#fff 25%,#A9B1D0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+[data-theme=light] .hero h1 .l1 .w{background:linear-gradient(180deg,#12152B 30%,#4B5488);-webkit-background-clip:text;background-clip:text}
+.hero h1 .l2 .w{background:linear-gradient(100deg,#22D3EE,#8B5CF6,#F472B6,#FBBF24,#22D3EE);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:wordin 1s cubic-bezier(.22,1,.36,1) forwards,shift 7s linear infinite;animation-delay:calc(var(--i)*.1s + .2s),0s}
+@keyframes wordin{from{opacity:0;transform:translateY(.55em) rotateX(-50deg);filter:blur(10px)}to{opacity:1;transform:none;filter:blur(0)}}
+.ft{display:grid;gap:28px;grid-template-columns:1.4fr 1fr 1.2fr;text-align:left;padding-bottom:22px}
+.ft p,.fc span{display:block;margin-top:10px;line-height:1.7}
+.fc{display:flex;flex-direction:column;gap:9px;align-items:flex-start}
+.fc h4{font:800 13px var(--hf);letter-spacing:.14em;text-transform:uppercase;color:var(--tx);margin-bottom:4px}
+.fl{background:none!important;border:0;padding:0;box-shadow:none!important;color:var(--mu);font-weight:500;text-decoration:none;border-radius:6px;text-align:left}
+.fl:hover{color:var(--tx);transform:translateX(3px)}
+.fcp{border-top:1px solid var(--bd);padding-top:16px;margin-top:6px}
+.li,.mb{overflow-wrap:anywhere}
+@media(max-width:720px){.fcp{padding-right:70px;text-align:left}.ft{grid-template-columns:1fr}.tbar select{flex:1 1 100%}}
+@media(prefers-reduced-motion:reduce){.hero h1 .w{animation:none;opacity:1}}
+</style>
 </head>
-<body>
+<body data-tab="shop">
+<div id="boot"><i class="lg">N</i><span class="bar"></span></div>
 <header><div class="w hd">
 <div class="logo"><i class="lg">N</i><span>Nsang<b>No1File</b>.vn</span></div>
 <select id="cat" aria-label="Lọc danh mục"></select>
@@ -256,10 +293,15 @@ footer b{color:var(--tx)}
 </section>
 <div id="cats"></div>
 <nav class="tabs" id="tabs"></nav>
+<div class="tbar" id="tbar"><label class="sbox"><span>🔎</span><input id="q" type="search" placeholder="Tìm file theo tên, mô tả…" autocomplete="off" aria-label="Tìm kiếm file"></label><select id="sort" aria-label="Sắp xếp"><option value="">Sắp xếp: Mặc định</option><option value="new">Mới nhất</option><option value="pa">Giá tăng dần</option><option value="pd">Giá giảm dần</option></select></div>
 <div id="warn"></div><div id="main"></div>
 </main>
 <section id="sp" class="w"><div class="li sp" style="display:block"><h3>🎧 Hỗ trợ trực tuyến</h3><p class="mu" style="font-size:13px;margin-top:6px">Gặp khó khăn khi cài đặt hoặc thanh toán? Nhắn Zalo để được hỗ trợ.</p><a href="https://zalo.me/0867881460" target="_blank" rel="noopener noreferrer"><span>💬 Zalo CSKH</span><span style="color:#6366F1">Kết nối →</span></a><div class="r"><span>📞 Hotline</span><span class="mono">0867881460</span></div></div></section>
-<footer><div class="w">© 2026 NsangNo1File.vn · Cam kết giao link tải tức thì sau khi thanh toán · Hotline/Zalo <b class="mono">0867881460</b><br>Nạp tiền: quét QR riêng của tài khoản, chuyển đúng nội dung <b class="mono">NAP &lt;mã tài khoản&gt;</b> — ví được cộng tự động sau khi nhận tiền.</div></footer>
+<footer><div class="w ft">
+<div class="fb"><div class="logo"><i class="lg">N</i><span>Nsang<b>No1File</b>.vn</span></div><p>Hệ thống bán file vĩnh viễn uy tín. Cam kết giao link tải tức thì sau khi thanh toán.</p></div>
+<div class="fc"><h4>Điều hướng</h4><button class="fl" data-act="home">Trang chủ</button><button class="fl" data-act="goshop">Kho file</button><button class="fl" data-act="topup">Nạp tiền</button><button class="fl" data-act="tab" data-t="owned">File đã mua</button></div>
+<div class="fc"><h4>Hỗ trợ</h4><a class="fl" href="https://zalo.me/0867881460" target="_blank" rel="noopener noreferrer">Zalo CSKH</a><span>Hotline <b class="mono">0867881460</b></span><span>Nạp tiền: chuyển đúng nội dung <b class="mono">NAP &lt;mã tài khoản&gt;</b>, ví được cộng tự động sau khi nhận tiền.</span></div>
+</div><div class="w fcp">© 2026 NSANGNO1FILE.VN · Mọi quyền được bảo lưu</div></footer>
 <a id="zl" class="fab" href="https://zalo.me/0867881460" target="_blank" rel="noopener noreferrer" aria-label="Zalo hỗ trợ">Zalo</a><button id="up" class="fab" data-act="top" aria-label="Lên đầu trang">↑</button>
 <nav id="nav"><button data-act="home"><span>🏠</span>Trang chủ</button><button data-act="goshop"><span>🛍️</span>Sản phẩm</button><button data-act="topup"><span>💰</span>Nạp tiền</button><button data-act="tab" data-t="owned"><span>🧾</span>Đơn hàng</button><button data-act="me"><span>👤</span>Tôi</button></nav>
 <div id="ov"></div><div id="ts"></div>
@@ -293,7 +335,7 @@ try{
 }catch(e){FBERR=e.message||String(e)}
 const Store={save(){try{localStorage.setItem('ns1f:theme',DB.theme)}catch(e){}}};
 let DB={top:[],files:[],links:{},pending:[],me:null,theme:(()=>{try{return localStorage.getItem('ns1f:theme')||'dark'}catch(e){return'dark'}})()};
-let tab='shop',q='',cat='',editId=null,topup=null,pend=null,shown=0;
+let tab='shop',q='',cat='',sortBy='',loaded=!FBOK,editId=null,topup=null,pend=null,shown=0;
 const AuthService={login:()=>FBOK?signInWithPopup(auth,new GoogleAuthProvider()):Promise.reject(new Error(FBERR||'Firebase chưa sẵn sàng')),logout:()=>FBOK&&signOut(auth),user:()=>DB.me};
 const isAdmin=()=>!!DB.me?.admin;
 const FileService={
@@ -314,7 +356,7 @@ const WalletService={
 };
 const refresh=()=>{renderUser(false);renderTabs();if(!(tab==='admin'&&document.activeElement?.closest?.('#af,#bk,#mc')))renderMain();renderStats()};
 let unsubs=[];
-if(FBOK)onSnapshot(collection(fs,'files'),s=>{DB.files=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at||0)-(a.at||0));refresh()},er=>toast('Không tải được kho file: '+er.code,'er'));
+if(FBOK)onSnapshot(collection(fs,'files'),s=>{DB.files=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at||0)-(a.at||0));loaded=true;refresh()},er=>{loaded=true;refresh();toast('Không tải được kho file: '+er.code,'er')});
 if(FBOK)onSnapshot(query(collection(fs,'board'),orderBy('total','desc'),limit(10)),s=>{DB.top=s.docs.map(d=>({id:d.id,...d.data()}));refresh()},()=>{});
 if(FBOK)onAuthStateChanged(auth,async fu=>{
  unsubs.forEach(f=>f());unsubs=[];DB.me=null;DB.links={};DB.pending=[];
@@ -374,15 +416,16 @@ function renderUser(anim){
 const renderTabs=()=>{if(tab==='admin'&&!isAdmin())tab='shop';$('#tabs').innerHTML=[['shop','🛍️ Kho File'],['owned','📥 File Đã Mua'],['hist','🧾 Lịch Sử Giao Dịch'],['me','👤 Tôi'],...(isAdmin()?[['admin','⚙️ Quản Trị · Nạp tiền']]:[])].map(([k,t])=>`<button class="${k===tab?'on':''}" data-act="tab" data-t="${k}">${t}</button>`).join('')};
 const renderCats=()=>{$('#cats').innerHTML=CATS.map(c=>{const n=DB.files.filter(f=>f.cat===c).length;return `<button class="card cc ${cat===c?'on':''}" data-act="cat" data-c="${c}"><span class="ic">${ICONS[c]}</span><span><b style="font-size:17px">${c}</b><br><small>${n} gói · bấm để xem bảng giá</small></span></button>`}).join('')};
 const renderStats=()=>{renderCats();$('#st').innerHTML=`<div><b>🛡️ Bảo hành uy tín</b></div><div><b>⚡ Giao link tải tức thì</b></div><div><b>💳 Nạp ví tự động</b></div>`};
-const renderMain=()=>{document.body.classList.toggle('mep',tab==='me');$('#main').innerHTML=({shop:vShop,owned:vOwned,hist:vHist,me:vMe,admin:vAdmin})[tab]()};
+const renderMain=()=>{document.body.classList.toggle('mep',tab==='me');document.body.dataset.tab=tab;$('#main').innerHTML=({shop:vShop,owned:vOwned,hist:vHist,me:vMe,admin:vAdmin})[tab]()};
 const renderAll=()=>{renderUser(false);renderTabs();renderMain();renderStats()};
 
 function vShop(){
- const k=q.trim().toLowerCase(),L=DB.files.filter(f=>(!cat||f.cat===cat)&&(!k||(f.name+' '+f.desc+' '+f.cat).toLowerCase().includes(k))).sort((a,b)=>a.cat===b.cat?a.price-b.price:CATS.indexOf(a.cat)-CATS.indexOf(b.cat)),u=AuthService.user();
+ if(!loaded)return '<div class="grid">'+'<div class="sk"></div>'.repeat(6)+'</div>';
+ const k=q.trim().toLowerCase(),L=DB.files.filter(f=>(!cat||f.cat===cat)&&(!k||(f.name+' '+f.desc+' '+f.cat).toLowerCase().includes(k))).sort((a,b)=>sortBy==='pa'?a.price-b.price:sortBy==='pd'?b.price-a.price:sortBy==='new'?(b.at||0)-(a.at||0):a.cat===b.cat?a.price-b.price:CATS.indexOf(a.cat)-CATS.indexOf(b.cat)),u=AuthService.user();
  if(!L.length)return `<div class="li" style="display:block;text-align:center">😶 Không tìm thấy file phù hợp${k?` cho “${esc(q.trim())}”`:''}.<br><br><button data-act="reset">Xóa bộ lọc</button></div>`;
  return '<div class="grid">'+L.map(f=>{
   const own=u&&u.owned.some(o=>o.id===f.id);
-  return `<article class="card"><div class="row" style="justify-content:space-between"><span class="ic">${f.icon}</span>${own?'<span class="bd ok">✓ Đã sở hữu</span>':''}</div>
+  return `<article class="card"><div class="row" style="justify-content:space-between"><span class="ic">${f.icon}</span>${own?'<span class="bd ok">✓ Đã sở hữu</span>':'<span class="bd on">● Sẵn sàng</span>'}</div>
 <h3 style="font-size:16px">${esc(f.name)}</h3><p class="mu" style="font-size:13px;flex:1">${esc(f.desc)}</p>
 <small class="mu mono">${esc(f.cat)} · ${esc(f.meta)}</small>
 <div class="row" style="justify-content:space-between"><span class="price mono">${vnd(f.price)}</span>${own?`<span class="row" style="flex:1;justify-content:flex-end">${vLinks(DB.links[f.id])||'<small class="mu">Đang tải link…</small>'}</span>`:`<button class="p" data-act="buy" data-id="${f.id}">Mua ngay</button>`}</div></article>`}).join('')+'</div>'}
@@ -513,7 +556,7 @@ document.addEventListener('click',e=>{
  case'profile':case'me':if(!u){openModal(vLogin());break}tab='me';renderTabs();renderMain();window.scrollTo({top:0,behavior:'smooth'});break;
  case'logout':AuthService.logout();closeModal();renderAll();toast('Đã đăng xuất','ok');break;
  case'theme':DB.theme=DB.theme==='dark'?'light':'dark';Store.save();applyTheme();renderUser(false);break;
- case'reset':q='';cat='';$('#cat').value='';renderMain();break;
+ case'reset':q='';cat='';sortBy='';$('#cat').value='';$('#q').value='';$('#sort').value='';renderMain();break;
  case'topup':openTopup();break;
  case'amt':if(topup){topup.amt=+d.a;$('#amt').value=d.a;drawQR()}break;
  case'cp':copy(d.v);break;
@@ -562,7 +605,7 @@ document.addEventListener('input',e=>{
  const t=e.target;
  if(t.id==='q'){q=t.value;if(tab!=='shop'){tab='shop';renderTabs()}renderMain()}
  else if(t.id==='amt'&&topup){const n=Number(t.value);topup.amt=t.value!==''&&Number.isFinite(n)?Math.round(n):0;drawQR()}});
-document.addEventListener('change',e=>{if(e.target.id==='cat'){cat=e.target.value;if(tab!=='shop'){tab='shop';renderTabs()}renderMain();renderCats()}});
+document.addEventListener('change',e=>{if(e.target.id==='sort'){sortBy=e.target.value;if(tab!=='shop'){tab='shop';renderTabs()}renderMain()}if(e.target.id==='cat'){cat=e.target.value;if(tab!=='shop'){tab='shop';renderTabs()}renderMain();renderCats()}});
 document.addEventListener('submit',e=>{
  e.preventDefault();const f=e.target,fd=new FormData(f);
  if(f.id==='lf')doLogin(fd.get('name'),fd.get('email'));
@@ -852,6 +895,37 @@ document.addEventListener('pointermove',e=>{
  raf=requestAnimationFrame(()=>{raf=0;const c=ev.target.closest&&ev.target.closest('.card');if(!c)return;
   const r=c.getBoundingClientRect();c.style.setProperty('--mx',(ev.clientX-r.left)+'px');c.style.setProperty('--my',(ev.clientY-r.top)+'px')});
 },{passive:true});
+})();
+</script>
+<script id="lux2-js">
+(()=>{
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches,HV=matchMedia('(hover:hover)').matches;
+/* màn hình chờ */
+const boot=document.getElementById('boot'),hide=()=>boot&&boot.classList.add('off');
+addEventListener('load',()=>setTimeout(hide,450));setTimeout(hide,3500);
+/* chữ hero xuất hiện từng từ */
+const h=document.querySelector('.hero h1');
+if(h&&!RM){let i=0;h.querySelectorAll('.l1,.l2').forEach(l=>{l.innerHTML=l.textContent.trim().split(/\s+/).map(w=>`<span class="w" style="--i:${i++}">${w}</span>`).join(' ')});h.classList.add('split')}
+/* nghiêng 3D + nút nam châm */
+if(HV&&!RM){
+ let raf=0,e0=null,tilted=null;
+ document.addEventListener('pointermove',e=>{e0=e;if(raf)return;raf=requestAnimationFrame(()=>{raf=0;const e=e0,t=e.target.closest&&e.target.closest('article.card');
+  if(tilted&&tilted!==t){tilted.style.setProperty('--tx','0deg');tilted.style.setProperty('--ty','0deg')}
+  if(t){const r=t.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;t.style.setProperty('--tx',(-y*9).toFixed(2)+'deg');t.style.setProperty('--ty',(x*11).toFixed(2)+'deg')}
+  tilted=t;
+  document.querySelectorAll('.p.mg').forEach(b=>{if(b!==(e.target.closest&&e.target.closest('.p'))){b.style.translate=''}});
+  const b=e.target.closest&&e.target.closest('.p');
+  if(b){b.classList.add('mg');const r=b.getBoundingClientRect();b.style.translate=`${((e.clientX-r.left)/r.width-.5)*10}px ${((e.clientY-r.top)/r.height-.5)*8}px`}
+ })},{passive:true});
+}
+/* số dư nhảy số mượt */
+let last=null;
+const count=()=>{const el=document.querySelector('#main .wl b');if(!el){last=null;return}
+ const to=parseInt(el.textContent.replace(/\D/g,''),10);if(!Number.isFinite(to)||el.dataset.n===String(to))return;
+ el.dataset.n=to;if(RM){last=to;return}
+ const from=last==null?0:last,t0=performance.now(),fmt=n=>new Intl.NumberFormat('vi-VN').format(Math.round(n))+'₫';
+ const st=t=>{const k=Math.min(1,(t-t0)/900),e=1-Math.pow(1-k,3);el.textContent=fmt(from+(to-from)*e);if(k<1)requestAnimationFrame(st);else last=to};requestAnimationFrame(st)};
+new MutationObserver(count).observe(document.querySelector('#main'),{childList:true,subtree:true});
 })();
 </script>
 </body>
